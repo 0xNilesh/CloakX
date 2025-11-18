@@ -64,101 +64,101 @@ const Compute = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
-      <div className="container mx-auto px-4 py-12">
+
+      <div className="container mx-auto px-6 py-12">
         <div className="max-w-2xl mx-auto">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={() => navigate("/datasets")}
-            className="mb-6"
+            className="mb-8 font-medium text-muted-foreground hover:text-white"
           >
             ← Back to Datasets
           </Button>
 
-          <Card className="p-8 border">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+          <Card className="p-10 border border-border">
+            <div className="text-center mb-10">
+              <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 {computeStep === "complete" ? (
-                  <CheckCircle2 className="w-8 h-8" />
+                  <CheckCircle2 className="w-7 h-7 text-primary" />
                 ) : computeStep !== "idle" ? (
-                  <Loader2 className="w-8 h-8 animate-spin" />
+                  <Loader2 className="w-7 h-7 text-primary animate-spin" />
                 ) : (
-                  <Coins className="w-8 h-8" />
+                  <Coins className="w-7 h-7 text-primary" />
                 )}
               </div>
-              <h2 className="text-2xl font-bold mb-2">{stepInfo.title}</h2>
-              <p className="text-muted-foreground">{stepInfo.description}</p>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">{stepInfo.title}</h2>
+              <p className="text-muted-foreground leading-relaxed">{stepInfo.description}</p>
             </div>
 
             {computeStep === "idle" && (
               <div className="space-y-6">
-                <div className="bg-secondary rounded p-6 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Dataset</span>
-                    <span className="font-medium">Healthcare Records</span>
+                <div className="border border-border rounded-lg p-6 space-y-4 bg-card">
+                  <div className="flex justify-between items-center pb-4 border-b border-border">
+                    <span className="text-sm text-muted-foreground font-medium">Dataset</span>
+                    <span className="font-semibold text-foreground">Healthcare Records</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-4 border-b border-border">
+                    <span className="text-sm text-muted-foreground font-medium">Data Contributors</span>
+                    <span className="font-semibold text-foreground">142 sources</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Contributors</span>
-                    <span className="font-medium">142 data sources</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Compute Cost</span>
-                    <span className="font-medium">1 SUI</span>
+                    <span className="text-sm text-muted-foreground font-medium">Compute Cost</span>
+                    <span className="font-semibold text-foreground">1 SUI</span>
                   </div>
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleRequestCompute}
-                  className="w-full"
+                  className="w-full font-medium"
                   size="lg"
                 >
-                  <Coins className="w-5 h-5 mr-2" />
+                  <Coins className="w-4 h-4 mr-2" />
                   Pay 1 SUI & Request Compute
                 </Button>
               </div>
             )}
 
             {computeStep !== "idle" && computeStep !== "complete" && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <Progress value={progress} className="h-2" />
                 <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{Math.round(progress)}% complete</span>
+                  <span className="font-medium">{Math.round(progress)}% complete</span>
                 </div>
               </div>
             )}
 
             {computeStep === "complete" && (
               <div className="space-y-6">
-                <div className="bg-secondary border rounded p-6">
-                  <h3 className="font-semibold mb-4">Computation Results</h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total Records Analyzed</span>
-                      <span className="font-medium">1,247</span>
+                <div className="border border-border rounded-lg p-6 bg-card">
+                  <h3 className="font-semibold tracking-tight mb-6">Computation Results</h3>
+                  <div className="space-y-4 text-sm">
+                    <div className="flex justify-between pb-4 border-b border-border">
+                      <span className="text-muted-foreground font-medium">Total Records Analyzed</span>
+                      <span className="font-semibold text-foreground">1,247</span>
+                    </div>
+                    <div className="flex justify-between pb-4 border-b border-border">
+                      <span className="text-muted-foreground font-medium">Average Age</span>
+                      <span className="font-semibold text-foreground">42.3 years</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Average Age</span>
-                      <span className="font-medium">42.3 years</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Success Rate</span>
-                      <span className="font-medium">87.2%</span>
+                      <span className="text-muted-foreground font-medium">Success Rate</span>
+                      <span className="font-semibold text-foreground">87.2%</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <Button className="flex-1">
+                  <Button className="flex-1 font-medium">
                     <Download className="w-4 h-4 mr-2" />
-                    Download Full Results
+                    Download Results
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => navigate("/dashboard")}
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 font-medium"
                   >
-                    View Dashboard
+                    Dashboard
                   </Button>
                 </div>
               </div>

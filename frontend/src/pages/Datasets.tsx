@@ -51,42 +51,40 @@ const Datasets = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
-      <div className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
-            Dataset Catalog
+
+      <div className="container mx-auto px-6 py-16">
+        <div className="max-w-3xl mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Available Datasets
           </h1>
-          <p className="text-muted-foreground">
-            Browse curated datasets and contribute your data or request computations
+          <p className="text-lg text-muted-foreground">
+            Contribute your data securely or request computations on datasets. All data remains encrypted and private throughout the process.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-6">
           {mockDatasets.map((dataset) => (
-            <Card key={dataset.id} className="p-6 border">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 bg-secondary rounded flex items-center justify-center flex-shrink-0">
-                    <Database className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-1">{dataset.name}</h3>
-                    <Badge variant="secondary" className="text-xs">
-                      {dataset.category}
-                    </Badge>
-                  </div>
+            <Card key={dataset.id} className="p-8 border border-border hover:border-primary/50 transition-colors">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center flex-shrink-0">
+                  <Database className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold tracking-tight mb-2">{dataset.name}</h3>
+                  <Badge variant="secondary" className="text-xs font-medium">
+                    {dataset.category}
+                  </Badge>
                 </div>
               </div>
 
-              <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-6 leading-relaxed">
                 {dataset.description}
               </p>
 
-              <div className="bg-secondary rounded p-4 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Eye className="w-4 h-4" />
-                  <span className="text-sm font-medium">Schema</span>
+              <div className="space-y-3 mb-6 pb-6 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">Data Schema</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {dataset.schema.map((field) => (
@@ -97,22 +95,25 @@ const Datasets = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                <span>{dataset.contributors} contributors</span>
-                <span className="font-medium">{dataset.computePrice}/compute</span>
+              <div className="flex items-center justify-between text-sm mb-6 pb-6 border-b border-border">
+                <div>
+                  <span className="text-muted-foreground">{dataset.contributors}</span>
+                  <span className="text-muted-foreground ml-1">contributors</span>
+                </div>
+                <div className="font-semibold">{dataset.computePrice}</div>
               </div>
 
-              <div className="flex gap-2">
-                <Button asChild className="flex-1">
+              <div className="grid grid-cols-2 gap-3">
+                <Button asChild size="sm" className="font-medium">
                   <Link to={`/contribute/${dataset.id}`}>
                     <Upload className="w-4 h-4 mr-2" />
-                    Contribute Data
+                    Contribute
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="flex-1">
+                <Button asChild size="sm" variant="outline" className="font-medium">
                   <Link to={`/compute/${dataset.id}`}>
                     <ShoppingCart className="w-4 h-4 mr-2" />
-                    Request Compute
+                    Compute
                   </Link>
                 </Button>
               </div>

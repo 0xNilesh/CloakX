@@ -36,68 +36,76 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold mb-8">
-          Dashboard
-        </h1>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-card border">
-            <TabsTrigger value="contributor">Contributor View</TabsTrigger>
-            <TabsTrigger value="buyer">Buyer View</TabsTrigger>
+      <div className="container mx-auto px-6 py-16">
+        <div className="mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
+            Dashboard
+          </h1>
+          <p className="text-muted-foreground">Manage your contributions and compute activities</p>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="bg-card border border-border inline-flex h-10 items-center justify-center rounded-lg p-1">
+            <TabsTrigger value="contributor" className="font-medium">Contributor View</TabsTrigger>
+            <TabsTrigger value="buyer" className="font-medium">Buyer View</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="contributor" className="space-y-6">
+          <TabsContent value="contributor" className="space-y-8">
             {/* Stats Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6 border">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-secondary rounded flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5" />
+              <Card className="p-8 border border-border">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-muted-foreground">Total Earned</span>
+                  <span className="text-sm font-medium text-muted-foreground">Total Earned</span>
                 </div>
-                <p className="text-3xl font-bold">{contributorStats.totalEarned}</p>
+                <p className="text-4xl font-bold tracking-tight">{contributorStats.totalEarned}</p>
               </Card>
 
-              <Card className="p-6 border">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-secondary rounded flex items-center justify-center">
-                    <Database className="w-5 h-5" />
+              <Card className="p-8 border border-border">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Database className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-muted-foreground">Datasets</span>
+                  <span className="text-sm font-medium text-muted-foreground">Active Datasets</span>
                 </div>
-                <p className="text-3xl font-bold">{contributorStats.datasets}</p>
+                <p className="text-4xl font-bold tracking-tight">{contributorStats.datasets}</p>
               </Card>
 
-              <Card className="p-6 border">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-secondary rounded flex items-center justify-center">
-                    <Zap className="w-5 h-5" />
+              <Card className="p-8 border border-border">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-muted-foreground">Compute Requests</span>
+                  <span className="text-sm font-medium text-muted-foreground">Compute Uses</span>
                 </div>
-                <p className="text-3xl font-bold">{contributorStats.computeRequests}</p>
+                <p className="text-4xl font-bold tracking-tight">{contributorStats.computeRequests}</p>
               </Card>
             </div>
 
             {/* Contributions Table */}
-            <Card className="p-6 border">
-              <h2 className="text-xl font-semibold mb-4">Your Contributions</h2>
-              <div className="space-y-3">
-                {contributions.map((contribution) => (
-                  <div key={contribution.id} className="flex items-center justify-between p-4 bg-secondary/50 rounded hover:bg-secondary transition-colors">
+            <Card className="p-8 border border-border">
+              <h2 className="text-xl font-bold tracking-tight mb-6">Contribution History</h2>
+              <div className="space-y-1">
+                {contributions.map((contribution, index) => (
+                  <div
+                    key={contribution.id}
+                    className={`flex items-center justify-between p-4 rounded-lg hover:bg-secondary/50 transition-colors ${
+                      index !== contributions.length - 1 ? "border-b border-border" : ""
+                    }`}
+                  >
                     <div className="flex-1">
-                      <p className="font-medium">{contribution.dataset}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Calendar className="w-3 h-3 text-muted-foreground" />
+                      <p className="font-semibold text-foreground">{contribution.dataset}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
                         <span className="text-sm text-muted-foreground">{contribution.date}</span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-semibold">{contribution.earnings}</p>
-                      <p className="text-sm text-muted-foreground">{contribution.computes} computes</p>
+                    <div className="text-right pl-4">
+                      <p className="text-lg font-semibold text-foreground">{contribution.earnings}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{contribution.computes} uses</p>
                     </div>
                   </div>
                 ))}
@@ -105,58 +113,66 @@ const Dashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="buyer" className="space-y-6">
+          <TabsContent value="buyer" className="space-y-8">
             {/* Stats Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6 border">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-secondary rounded flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5" />
+              <Card className="p-8 border border-border">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-muted-foreground">Total Spent</span>
+                  <span className="text-sm font-medium text-muted-foreground">Total Spent</span>
                 </div>
-                <p className="text-3xl font-bold">{buyerStats.totalSpent}</p>
+                <p className="text-4xl font-bold tracking-tight">{buyerStats.totalSpent}</p>
               </Card>
 
-              <Card className="p-6 border">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-secondary rounded flex items-center justify-center">
-                    <Zap className="w-5 h-5" />
+              <Card className="p-8 border border-border">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-muted-foreground">Computes</span>
+                  <span className="text-sm font-medium text-muted-foreground">Computations</span>
                 </div>
-                <p className="text-3xl font-bold">{buyerStats.computeRequests}</p>
+                <p className="text-4xl font-bold tracking-tight">{buyerStats.computeRequests}</p>
               </Card>
 
-              <Card className="p-6 border">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-secondary rounded flex items-center justify-center">
-                    <Database className="w-5 h-5" />
+              <Card className="p-8 border border-border">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-11 h-11 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Database className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-muted-foreground">Datasets Used</span>
+                  <span className="text-sm font-medium text-muted-foreground">Datasets Used</span>
                 </div>
-                <p className="text-3xl font-bold">{buyerStats.datasetsUsed}</p>
+                <p className="text-4xl font-bold tracking-tight">{buyerStats.datasetsUsed}</p>
               </Card>
             </div>
 
             {/* Computes Table */}
-            <Card className="p-6 border">
-              <h2 className="text-xl font-semibold mb-4">Your Computes</h2>
-              <div className="space-y-3">
-                {computes.map((compute) => (
-                  <div key={compute.id} className="flex items-center justify-between p-4 bg-secondary/50 rounded hover:bg-secondary transition-colors">
+            <Card className="p-8 border border-border">
+              <h2 className="text-xl font-bold tracking-tight mb-6">Computation History</h2>
+              <div className="space-y-1">
+                {computes.map((compute, index) => (
+                  <div
+                    key={compute.id}
+                    className={`flex items-center justify-between p-4 rounded-lg hover:bg-secondary/50 transition-colors ${
+                      index !== computes.length - 1 ? "border-b border-border" : ""
+                    }`}
+                  >
                     <div className="flex-1">
-                      <p className="font-medium">{compute.dataset}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Calendar className="w-3 h-3 text-muted-foreground" />
+                      <p className="font-semibold text-foreground">{compute.dataset}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
                         <span className="text-sm text-muted-foreground">{compute.date}</span>
                       </div>
                     </div>
-                    <div className="text-right flex items-center gap-4">
-                      <Badge variant={compute.status === "Complete" ? "default" : "secondary"}>
+                    <div className="flex items-center gap-4 pl-4">
+                      <Badge
+                        variant={compute.status === "Complete" ? "default" : "secondary"}
+                        className="font-medium"
+                      >
                         {compute.status}
                       </Badge>
-                      <p className="text-lg font-semibold">{compute.cost}</p>
+                      <p className="text-lg font-semibold text-foreground whitespace-nowrap">{compute.cost}</p>
                     </div>
                   </div>
                 ))}

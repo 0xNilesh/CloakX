@@ -53,6 +53,10 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      spacing: {
+        "0.5": "0.125rem",
+        "1.5": "0.375rem",
+      },
       keyframes: {
         "accordion-down": {
           from: {
