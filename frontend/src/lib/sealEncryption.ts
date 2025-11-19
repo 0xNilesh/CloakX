@@ -53,6 +53,7 @@ export const encryptWithSeal = async (
     console.log("Encryption threshold:", threshold);
     console.log("Key servers:", TESTNET_KEY_SERVERS);
 
+    // TODO: Implement proper Move module deployment and access control
     // For now, we'll use a simplified encryption without Move package
     // In production, you'll need to deploy a Move module with access control
     // and use its packageId and resource id
