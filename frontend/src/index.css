@@ -63,3 +63,34 @@ All colors MUST be HSL.
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* Suiet Wallet Kit Custom Styles */
+.suiet-modal-overlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.suiet-modal {
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.suiet-wallet-button {
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  transition: all 0.2s !important;
+}
+
+.suiet-wallet-button:hover {
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.suiet-modal-title {
+  color: hsl(var(--foreground)) !important;
+}
+
+.suiet-modal-content {
+  background: hsl(var(--background)) !important;
+}

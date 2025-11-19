@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Database, Wallet } from "lucide-react";
+import { Database } from "lucide-react";
+import { WalletConnect } from "./WalletConnect";
 
 export const Navbar = () => {
   return (
@@ -25,10 +25,7 @@ export const Navbar = () => {
             </Link>
           </div>
 
-          <Button size="sm" className="gap-2 font-medium">
-            <Wallet className="w-4 h-4" />
-            Connect Wallet
-          </Button>
+          <WalletConnect size="sm" />
         </div>
       </div>
     </nav>

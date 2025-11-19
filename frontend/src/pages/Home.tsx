@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Shield, Database, Zap, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { WalletConnect } from "@/components/WalletConnect";
 
 const Home = () => {
   return (
@@ -111,9 +112,7 @@ const Home = () => {
                 and earn rewards securely.
               </p>
             </div>
-            <Button size="lg" className="font-medium">
-              Connect Wallet
-            </Button>
+            <WalletConnect size="lg" />
           </div>
         </div>
       </section>
