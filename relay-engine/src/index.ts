@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { setupListeners } from './listeners';
 
 (async () => {

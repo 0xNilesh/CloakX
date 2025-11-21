@@ -5,7 +5,7 @@
 
 // Package ID - Main CloakX package
 export const PACKAGE_ID =
-  "0x5490bef7987ed1c72cf5750de3a269c197d6743a0359a360cca8472b5f1a815a";
+  "0x4ed393ca28d4e62d864c49375d2981ab0d0d89f4b9ecc139c804fe008cea7d85";
 
 // Module Names
 export const MODULES = {
@@ -16,44 +16,44 @@ export const MODULES = {
 
 // Shared Object IDs
 export const POOL_REGISTRY_ID =
-  "0xffca34785317c6dcde84e1245130983a67c814e14f6f4ff086994575170a51dc";
+  "0x1302caa28d05f1840c14a5759f2e63f5a46c7d493178d3b3500d5fe43ae95f8e";
 export const JOB_REGISTRY_ID =
-  "0x480896e60dd02d226c05e2d5544402a527891b429653271a3c94a3d0cb89ed40";
+  "0x89bf7e1413730788703c0b50fb4b96010fb43e8ba7a5fa1fc2266311e7dbe21c";
 
 // Table IDs (for querying dynamic fields)
 // Pool Registry Tables
 export const POOLS_TABLE_ID =
   "0xbb34880c10a44c7a686f0f85848c44d74aa8a61e5fe68140ab84b00753741895";
 export const POOL_USERS_TABLE_ID =
-  "0xbb8339224feed0f8680fd0f9beb634278360d7633a63bc994d02850de3e685cb";
+  "0x46ac9e7157473c72b52c96a47c737aa92ff1784837f50f7fd1d5ca54fa15ebfd";
 export const POOL_DATA_TABLE_ID =
-  "0x209bb236225692a4339538a57b61c66dceba7c2d887b5743f94c8c1ace435418";
+  "0xf73a9e758b78ab349005aefa731c1ad59860b7302cefb074e957247772b3912a";
 export const USER_POOLS_TABLE_ID =
-  "0x1123a0e939c5f63a4895afd91ade507f719ee5098d1acddbb6504863208fcfa5";
+  "0xad29dd0818971351e26728f8a651c858c3ecf4a23ae7d49c2f5208c9b144b12b";
 
 // Job Registry Tables
 export const JOBS_TABLE_ID =
-  "0x70430e108bce95edfdfca91f4830646c0db67adb9618b70ebcc8ce657f814fad";
+  "0xfd6bad71cdc8753f395538290c540c26fc417c451c39d0f8ee7e54db4762c16c";
 export const JOBS_BY_CREATOR_TABLE_ID =
-  "0xceb8e54b9fde331fdb7d87c1d22b5a278d425e9ba5403960ace13e1c14da748f";
+  "0xae48ad529f099c316b2defa7683798c5ef63658eccb27f478ae1fe0452de73ac";
 export const JOBS_BY_STATUS_TABLE_ID =
-  "0x0607dcfd9303d3e8064b1aff2d1a5f937f130eaa59606ececb90980fc0f4bd77";
+  "0x468d8d697dcd382eb7e9341b8af2d21ce576bbf316e4328cee7294afbb3e9903";
 export const PAYOUTS_TABLE_ID =
-  "0x9bcbe19d50c27f5cee9565bd3626b6b72b6292284b532ccd28dba3f16871ccfa";
+  "0x3a4967300519cd65eab659da27f3196b2eeffab491edefa15355034c73c9f9bf";
 export const JOB_RESULTS_TABLE_ID =
-  "0x6558a558dd5f8db376cb2e164fb1b598151b3ebad5dc1a802a3b603d73816493";
+  "0x1c73a503cb5c3a546d9506225f09bee8cd0f35ea8e1830a66834ee5e37889a65";
 
 // Admin Objects (owned by publisher)
 export const ADMIN_CAP_ID =
-  "0x83a50290d019da09bf3427821d62c646d3e2a59aab6d05a60433bd9474fb4e4e";
+  "0xfceeb97dd759c83c3939e148a34d16cb3fc12915b6d78bfed23f0f2e4e4c6694";
 export const UPGRADE_CAP_ID =
-  "0x3df79134da79bd8446cf2c7bf4ee8f1256148e20ecd2541b527dcfe1810475aa";
+  "0x005d79900e06faeba61387a95daee90e4ff63b3c2667cdcb363f7d665ca7c6a4";
 
 // Enclave Objects
 export const CAP_OBJECT_ID =
-  "0x457631a7fad3b243cb6ecb72061ffe64884a5e3cfab30df71f468575f7783c49";
+  "0x8b499fd762a4d71cd7a442a52d6ad0da9e1ef9f56f0138d8af3eec711fb3b807";
 export const ENCLAVE_CONFIG_ID =
-  "0xb6f53fa0fcbc34b88d654edf96206e360ce5553b6b51433e24f319360e98ad41";
+  "0x5be7f5fc2c42ea883e4747c66c6107135ed93f389f1c81085321921579b4a10e";
 
 // Addresses
 export const PUBLISHER_ADDRESS =

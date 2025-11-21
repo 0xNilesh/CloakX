@@ -163,3 +163,56 @@ export async function getUserContributedDatasets(
   console.log(`✅ Found ${pools.length} contributed datasets`);
   return pools;
 }
+
+/**
+ * Convert bytes array to UTF-8 string
+ */
+function bytesToString(bytes: number[]): string {
+  if (!bytes || bytes.length === 0) return "";
+  try {
+    const decoder = new TextDecoder("utf-8");
+    const uint8Array = new Uint8Array(bytes);
+    return decoder.decode(uint8Array);
+  } catch (error) {
+    return String.fromCharCode(...bytes);
+  }
+}
+
+/**
+ * Get data blob IDs (Walrus IDs) for a specific pool
+ * Returns array of Walrus blob ID strings
+ */
+export async function getPoolDataBlobIds(poolId: bigint): Promise<string[]> {
+  console.log(`\n📦 Fetching data blob IDs for pool ${poolId}`);
+
+  try {
+    const poolDataField = await suiClient.getDynamicFieldObject({
+      parentId: POOL_DATA_TABLE_ID,
+      name: {
+        type: "u64",
+        value: poolId.toString(),
+      },
+    });
+
+    if (!poolDataField.data?.content) {
+      console.log(`ℹ️  Pool ${poolId} has no data blobs yet`);
+      return [];
+    }
+
+    const content = poolDataField.data.content as any;
+    const blobBytesArray = content.fields?.value || [];
+
+    // Convert each vector<u8> to string
+    const blobIds: string[] = blobBytesArray.map((bytes: number[]) =>
+      bytesToString(bytes)
+    );
+
+    console.log(
+      `✅ Found ${blobIds.length} data blobs for pool ${poolId}`
+    );
+    return blobIds;
+  } catch (error: any) {
+    console.error(`❌ Error fetching pool data blobs:`, error.message);
+    return [];
+  }
+}

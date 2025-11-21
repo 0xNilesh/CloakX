@@ -3,6 +3,15 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "watch": "nodemon --exec ts-node src/index.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "reset-cursors": "ts-node scripts/reset-cursors.ts",
+    "test-events": "ts-node scripts/test-events.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -3,19 +3,21 @@ export const CONFIG = {
 	POLLING_INTERVAL_MS: 5_000,
 
 	CLOAKX: {
-		packageId: '0xc70af73a7d9e7932c94506523a5d141871f3eb84e81a65e171d075bb43b8e07e',
+		// Updated to match contractConstants.ts
+		packageId: '0x4ed393ca28d4e62d864c49375d2981ab0d0d89f4b9ecc139c804fe008cea7d85',
 		module: 'jobs',
 	},
 
 	OBJECTS: {
+		// Updated to match contractConstants.ts
 		POOL_REGISTRY:
-			'0x022e4cd08d7b267f733fdc5e625e617a6fb875ef9e24b460d5276ec60bb9d069',
+			'0x1302caa28d05f1840c14a5759f2e63f5a46c7d493178d3b3500d5fe43ae95f8e',
 		JOB_REGISTRY:
-			'0x5decd6dfe763b48dc8ae01a3588a43cea7c8ab489daa6c8ab9fdfed77fa8085f',
+			'0x89bf7e1413730788703c0b50fb4b96010fb43e8ba7a5fa1fc2266311e7dbe21c',
 		ADMIN_CAP:
-			'0x8b2cb1fda5f56bd98201aeb339ff455dec07d7f2f8a8b54b3be38e697f3a322b',
+			'0xfceeb97dd759c83c3939e148a34d16cb3fc12915b6d78bfed23f0f2e4e4c6694',
 		UPGRADE_CAP:
-			'0x558e5d1961d1797d841f35bdaf5f5c966fadbf52bd1945d78214c5d83c0893e8',
+			'0x005d79900e06faeba61387a95daee90e4ff63b3c2667cdcb363f7d665ca7c6a4',
 	},
 
 	addresses: {

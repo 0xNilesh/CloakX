@@ -18,3 +18,19 @@ export type JobCompletedEvent = {
 	num_samples: string;
 	model_hash: string;
 };
+
+export type JobStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+
+export interface Job {
+	id: bigint;
+	creator: string;
+	poolId: bigint;
+	price: bigint;
+	buyerPublicKey: string;
+	status: JobStatus;
+	epochs: bigint;
+	learningRate: bigint;
+	modelConfigBlobId?: string;
+	createdAt?: Date;
+	updatedAt?: Date;
+}

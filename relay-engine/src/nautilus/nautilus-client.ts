@@ -27,8 +27,10 @@ export interface ProcessedDataResponse {
 export async function callNautilusTraining(
   payload: MLTrainingRequest
 ): Promise<ProcessedDataResponse> {
+  const nautilusUrl = process.env['NAUTILUS_URL'] || 'http://localhost:3000';
+
   const { data } = await axios.post(
-    `http://NAUTILUS_IP:3000/process_data`,
+    `${nautilusUrl}/process_data`,
     { payload },
     { headers: { 'Content-Type': 'application/json' } }
   );
