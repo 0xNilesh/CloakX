@@ -3,8 +3,10 @@ import { Navbar } from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Database, Upload, ShoppingCart, Eye } from "lucide-react";
+import { Database, Upload, ShoppingCart, Eye, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
+import { usePools } from "@/hooks/usePools";
+import { toast } from "sonner";
 
 const mockDatasets = [
   {
@@ -47,6 +49,21 @@ const mockDatasets = [
 
 const Datasets = () => {
   const [selectedDataset, setSelectedDataset] = useState<number | null>(null);
+  const { pools, loading, error, fetchPools } = usePools();
+
+  const handleFetchPools = async () => {
+    toast.info("Fetching pools from blockchain...");
+    const fetchedPools = await fetchPools();
+
+    if (fetchedPools.length > 0) {
+      const metadataArray = fetchedPools.map(p => p.metadata);
+      console.log("\n🎯 FINAL RESULT - Pool Metadata Array:");
+      console.log(metadataArray);
+      toast.success(`Found ${fetchedPools.length} pools! Check console for metadata array.`);
+    } else {
+      toast.warning("No pools found on-chain. Create some pools first!");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,12 +71,42 @@ const Datasets = () => {
 
       <div className="container mx-auto px-6 py-16">
         <div className="max-w-3xl mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            Available Datasets
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Contribute your data securely or request computations on datasets. All data remains encrypted and private throughout the process.
-          </p>
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                Available Datasets
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Contribute your data securely or request computations on datasets. All data remains encrypted and private throughout the process.
+              </p>
+            </div>
+            <Button
+              onClick={handleFetchPools}
+              disabled={loading}
+              variant="outline"
+              size="sm"
+              className="ml-4 gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Fetch Pools
+            </Button>
+          </div>
+
+          {pools.length > 0 && (
+            <div className="mt-4 p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+              <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                ✅ Found {pools.length} on-chain pools: {pools.map(p => `"${p.metadata}"`).join(", ")}
+              </p>
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-4 p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                ❌ Error: {error}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
