@@ -20,7 +20,7 @@
   "description": "",
   "dependencies": {
     "@mysten/sui": "^1.45.0",
-    "@prisma/client": "^6.19.0",
+    "@prisma/client": "6.19.0",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "prisma": "^6.19.0"
