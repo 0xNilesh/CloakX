@@ -20,7 +20,7 @@ enclave = { local = "../enclave" }
 # Override = { local = "../conflicting/version", override = true }
 
 [addresses]
-cloakx = "0x6fccf892d76a61b4cc51650a8a901cf5f65094af2ae3a39d925c4ea7a276e2ab"
+cloakx = "0x7aa0c33b72c5f97090dfded8bbef13a03682ff073eb925b185b4bb599b53e4a0"
 enclave = "0x43ccef90df564d367498ad5d1f279277d62825f37247e5104401b8c07b37e30b" # TODO: update enclave package address here once deployed
 
 # Named addresses will be accessible in Move as `@name`. They're also exported:
