@@ -1,16 +1,17 @@
 {
-  "PACKAGE_ID": "0x6fccf892d76a61b4cc51650a8a901cf5f65094af2ae3a39d925c4ea7a276e2ab",
+  "PACKAGE_ID": "0x7aa0c33b72c5f97090dfded8bbef13a03682ff073eb925b185b4bb599b53e4a0",
 
   "MODULES": {
-    "pools": "0x6fccf892d76a61b4cc51650a8a901cf5f65094af2ae3a39d925c4ea7a276e2ab::pools",
-    "jobs": "0x6fccf892d76a61b4cc51650a8a901cf5f65094af2ae3a39d925c4ea7a276e2ab::jobs",
-    "user_data": "0x6fccf892d76a61b4cc51650a8a901cf5f65094af2ae3a39d925c4ea7a276e2ab::user_data"
+    "pools": "0x7aa0c33b72c5f97090dfded8bbef13a03682ff073eb925b185b4bb599b53e4a0::pools",
+    "jobs": "0x7aa0c33b72c5f97090dfded8bbef13a03682ff073eb925b185b4bb599b53e4a0::jobs",
+    "user_data": "0x7aa0c33b72c5f97090dfded8bbef13a03682ff073eb925b185b4bb599b53e4a0::user_data"
   },
 
   "OBJECTS": {
-    "POOL_REGISTRY": "0x27c4dc3077ad973ad4befd2b4c1f60ac5cce04d551e50a24a9438a8958914426",
-    "ADMIN_CAP": "0xd6744f1f39fc650f6fece059a1ffd404169bcc736cbb0053aa235098f46fcece",
-    "JOB_REGISTRY": "0xf8e39bd662ddbbc7fcc996ce6ff3ca655ebe1c64dd3a9a3d9bb32e9b81926f9f"
+    "POOL_REGISTRY": "0x3f30bedab1e33645b94031b0b64cfdacffea4e639543d6b2b576430635979597",
+    "ADMIN_CAP": "0x9dda6981001a57051d35c94381d3825e8db73b87ac6b7d9992e3f250b02e3d08",
+    "JOB_REGISTRY": "0x5b9b1964095e617a4bcab03841b43ec833d83279df04f4c6c1e8ecb10c16f288",
+    "UPGRADE_CAP": "0xc7c580dba96dc7b601690e7d2741bf839534b0e29e8277eec7f8cdf5d00b6310"
   },
 
   "addresses": {
