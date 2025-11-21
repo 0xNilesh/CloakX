@@ -9,14 +9,54 @@ use cloakx::pools::{
     AdminCap,
     admin_owner
 };
-use enclave::enclave::{Enclave, verify_signature};
-use sui::coin::{Self, Coin};
+
+use enclave::enclave::{Self as enclave, Enclave};
+use sui::coin::{Self as coin, Coin};
+use sui::event;
 use sui::sui::SUI;
 use sui::table;
 
-//
+// Enclave / intents / errors
+const PROCESS_DATA_INTENT: u8 = 1;
+const EInvalidSignature: u64 = 900;
+
+public struct JOBS has drop {}
+
+///
+/// Enclave side:
+/// MLTrainingResponse {
+///   model_blob_id,
+///   accuracy,
+///   final_loss: (final_loss * 10000.0) as u64,
+///   num_samples: all_x_data.len() as u64,
+///   model_hash: model.get_weights_hash(),
+/// }
+public struct MLTrainingResponse has copy, drop {
+    model_blob_id: vector<u8>,
+    accuracy: u64,
+    final_loss: u64,
+    num_samples: u64,
+    model_hash: vector<u8>,
+}
+
+// EVENTS
+public struct JobCreated has copy, drop {
+    job_id: u64,
+    creator: address,
+    pool_id: u64,
+    price: u64,
+}
+
+public struct JobCompleted has copy, drop {
+    job_id: u64,
+    model_blob_id: vector<u8>,
+    accuracy: u64,
+    final_loss: u64,
+    num_samples: u64,
+    model_hash: vector<u8>,
+}
+
 // Job status and Job struct (escrow inside Job)
-//
 public enum JobStatus has copy, drop, store {
     Pending,
     Cancelled,
@@ -34,9 +74,7 @@ public struct Job has key, store {
     status: JobStatus,
 }
 
-//
 // Job Registry (jobs + indices + per-job payouts mapping)
-//
 public struct JobRegistry has key {
     id: UID,
     jobs: table::Table<u64, Job>,
@@ -48,11 +86,21 @@ public struct JobRegistry has key {
     next_job_id: u64,
 }
 
-//
 // Init registry
-//
-fun init(ctx: &mut TxContext) {
+fun init(otw: JOBS, ctx: &mut TxContext) {
     let sender = tx_context::sender(ctx);
+
+    let cap = enclave::new_cap(otw, ctx);
+
+    cap.create_enclave_config(
+        b"cloakx_enclave".to_string(),
+        x"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", // pcr0
+        x"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", // pcr1
+        x"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", // pcr2
+        ctx,
+    );
+
+    transfer::public_transfer(cap, sender);
 
     let mut reg = JobRegistry {
         id: object::new(ctx),
@@ -64,7 +112,6 @@ fun init(ctx: &mut TxContext) {
         next_job_id: 1u64,
     };
 
-    // prepare status buckets
     table::add(&mut reg.jobs_by_status, 0u64, vector::empty<u64>());
     table::add(&mut reg.jobs_by_status, 1u64, vector::empty<u64>());
     table::add(&mut reg.jobs_by_status, 2u64, vector::empty<u64>());
@@ -72,10 +119,8 @@ fun init(ctx: &mut TxContext) {
     transfer::transfer(reg, sender);
 }
 
-//
 // CREATE JOB
 // Pass a Coin<SUI> `payment` by-value. We require `paid >= price`. If extra, return remainder immediately.
-//
 public fun create_job(
     reg: &mut JobRegistry,
     pools: &PoolRegistry,
@@ -97,7 +142,6 @@ public fun create_job(
     if (paid > price) {
         let extra = paid - price;
         let extra_coin = coin::split(&mut payment, extra, ctx);
-        // use public_transfer to transfer to an arbitrary address
         transfer::public_transfer(extra_coin, creator);
     };
 
@@ -126,11 +170,17 @@ public fun create_job(
     // add to pending status bucket
     let pending_list = table::borrow_mut(&mut reg.jobs_by_status, 0u64);
     vector::push_back(pending_list, job_id);
+
+    // emit event
+    event::emit(JobCreated {
+        job_id,
+        creator,
+        pool_id,
+        price,
+    });
 }
 
-//
 // CANCEL JOB — creator only, refunds escrow
-//
 public fun cancel_job(reg: &mut JobRegistry, job_id: u64, ctx: &mut TxContext) {
     let sender = tx_context::sender(ctx);
 
@@ -162,21 +212,17 @@ public fun cancel_job(reg: &mut JobRegistry, job_id: u64, ctx: &mut TxContext) {
     move_status_after_removal(reg, job_id, 0u64, 1u64, creator);
 }
 
-//
 // COMPLETE JOB (admin + enclave signature)
-// - verify enclave signature
+// - verify enclave signature over MLTrainingResponse
 // - compute per-user payout and record in per-job payouts table (no transfers here)
-//
 public fun complete_job<E: drop>(
     admin_cap: &AdminCap,
     reg: &mut JobRegistry,
     pools: &PoolRegistry,
     encl: &Enclave<E>,
-    intent_scope: u8,
     timestamp_ms: u64,
-    payload: vector<u8>,
+    response: MLTrainingResponse,
     signature: &vector<u8>,
-    result_wid: vector<u8>,
     job_id: u64,
     ctx: &mut TxContext,
 ) {
@@ -192,10 +238,15 @@ public fun complete_job<E: drop>(
     assert!(job_ref.status == JobStatus::Pending, 221);
 
     // enclave signature verification
-    let ok = verify_signature(encl, intent_scope, timestamp_ms, payload, signature);
-    assert!(ok, 223);
+    let ok = encl.verify_signature(
+        PROCESS_DATA_INTENT,
+        timestamp_ms,
+        response,
+        signature,
+    );
+    assert!(ok, EInvalidSignature);
 
-    // get pool users (ASSUMES borrow_pool_users returns vector<address>)
+    // get pool users (ASSUMES borrow_pool_users returns &Table<u64, vector<address>>)
     let pool_users_tbl = borrow_pool_users(pools);
     let users_ref = table::borrow(pool_users_tbl, job_ref.pool_id);
     let n = vector::length(users_ref);
@@ -226,18 +277,26 @@ public fun complete_job<E: drop>(
         i = i + 1;
     };
 
-    // store result id
-    table::add(&mut reg.job_results, job_id, result_wid);
+    // store result id (Walrus model blob id)
+    table::add(&mut reg.job_results, job_id, response.model_blob_id);
 
-    // mark completed
+    // mark completed and move status bucket
     job_ref.status = JobStatus::Completed;
     move_status(reg, job_id, 0u64, 2u64);
+
+    // emit completion event
+    event::emit(JobCompleted {
+        job_id,
+        model_blob_id: response.model_blob_id,
+        accuracy: response.accuracy,
+        final_loss: response.final_loss,
+        num_samples: response.num_samples,
+        model_hash: response.model_hash,
+    });
 }
 
-//
 // Claim reward: user claims their recorded payout for a job.
 // Splits from job.escrow and public_transfer to claimer.
-//
 public fun claim_reward(reg: &mut JobRegistry, job_id: u64, ctx: &mut TxContext) {
     let claimer = tx_context::sender(ctx);
 
@@ -264,9 +323,7 @@ public fun claim_reward(reg: &mut JobRegistry, job_id: u64, ctx: &mut TxContext)
     transfer::public_transfer(pay_coin, claimer);
 }
 
-//
 // INTERNAL helpers
-//
 fun move_status(reg: &mut JobRegistry, job_id: u64, from: u64, to: u64) {
     let src = table::borrow_mut(&mut reg.jobs_by_status, from);
 
@@ -322,9 +379,7 @@ fun move_status_after_removal(
     vector::push_back(dst, job_id);
 }
 
-//
 // GETTERS
-//
 public fun get_job(reg: &JobRegistry, id: u64): &Job {
     table::borrow(&reg.jobs, id)
 }
