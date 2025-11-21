@@ -227,12 +227,12 @@ const Compute = () => {
     console.log("  • Buyer Public Key:", userKeypair.publicKey);
     console.log("  • Epochs:", 10);
     console.log("  • Learning Rate:", 100, "(represents 0.01)");
-    console.log("  • Price:", "0.001 SUI (1,000,000 MIST)");
+    console.log("  • Price:", "0.000.001 SUI (1,000,000 MIST)");
     console.log("  • Wallet Address:", wallet.account.address);
     console.log("=".repeat(60));
 
     try {
-      // Payment: 0.001 SUI = 1,000,000 MIST
+      // Payment: 0.000.001 SUI = 1,000,000 MIST
       const PRICE_IN_MIST = "1000000";
       const poolId = parseInt(datasetId || "1", 10);
 
@@ -314,7 +314,7 @@ const Compute = () => {
       case "payment":
         return {
           title: "Processing Payment",
-          description: "Confirming 1 SUI token payment..."
+          description: "Confirming 0.001 SUI token payment..."
         };
       case "extracting":
         return {
@@ -339,7 +339,7 @@ const Compute = () => {
       default:
         return {
           title: "Request Computation",
-          description: "1 SUI token per compute"
+          description: "0.001 SUI token per compute"
         };
     }
   };
@@ -389,7 +389,7 @@ const Compute = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground font-medium">Compute Cost</span>
-                    <span className="font-semibold text-foreground">1 SUI</span>
+                    <span className="font-semibold text-foreground">0.001 SUI</span>
                   </div>
                 </div>
 
@@ -587,7 +587,7 @@ const Compute = () => {
                     ) : (
                       <>
                         <Coins className="w-4 h-4 mr-2" />
-                        Pay 0.001 SUI & Request Compute
+                        Pay 0.000.001 SUI & Request Compute
                       </>
                     )}
                   </Button>
@@ -665,7 +665,7 @@ const Compute = () => {
                   <div className="space-y-4 text-sm">
                     <div className="flex justify-between pb-4 border-b border-border">
                       <span className="text-muted-foreground font-medium">Payment Amount</span>
-                      <span className="font-semibold text-foreground">0.001 SUI</span>
+                      <span className="font-semibold text-foreground">0.000.001 SUI</span>
                     </div>
                     <div className="flex justify-between pb-4 border-b border-border">
                       <span className="text-muted-foreground font-medium">Training Epochs</span>
