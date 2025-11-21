@@ -17,6 +17,9 @@ export const MODULES = {
 export const POOL_REGISTRY_ID = "0xffca34785317c6dcde84e1245130983a67c814e14f6f4ff086994575170a51dc";
 export const JOB_REGISTRY_ID = "0x480896e60dd02d226c05e2d5544402a527891b429653271a3c94a3d0cb89ed40";
 
+// Table IDs (for querying dynamic fields)
+export const POOLS_TABLE_ID = "0xbb34880c10a44c7a686f0f85848c44d74aa8a61e5fe68140ab84b00753741895";
+
 // Admin Objects (owned by publisher)
 export const ADMIN_CAP_ID = "0x83a50290d019da09bf3427821d62c646d3e2a59aab6d05a60433bd9474fb4e4e";
 export const UPGRADE_CAP_ID = "0x3df79134da79bd8446cf2c7bf4ee8f1256148e20ecd2541b527dcfe1810475aa";

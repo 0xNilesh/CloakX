@@ -4,7 +4,7 @@
  */
 
 import { suiClient } from "./suiContract";
-import { POOL_REGISTRY_ID } from "./contractConstants";
+import { POOL_REGISTRY_ID, POOLS_TABLE_ID } from "./contractConstants";
 
 /**
  * Pool data structure
@@ -23,15 +23,29 @@ export interface PoolData {
  * @returns Decoded string
  */
 function bytesToString(bytes: number[]): string {
+  console.log(`      🔤 Converting bytes to string...`);
+  console.log(`         Input bytes:`, bytes);
+  console.log(`         Bytes type:`, typeof bytes);
+  console.log(`         Is array:`, Array.isArray(bytes));
+
+  if (!bytes || bytes.length === 0) {
+    console.warn(`         ⚠️  Empty or null bytes array`);
+    return "";
+  }
+
   try {
     // Use TextDecoder for proper UTF-8 decoding
     const decoder = new TextDecoder('utf-8');
     const uint8Array = new Uint8Array(bytes);
-    return decoder.decode(uint8Array);
+    const decoded = decoder.decode(uint8Array);
+    console.log(`         ✓ Decoded string: "${decoded}"`);
+    return decoded;
   } catch (error) {
-    console.error("Error decoding bytes to string:", error);
+    console.error("         ❌ Error decoding bytes to string:", error);
     // Fallback to simple conversion
-    return String.fromCharCode(...bytes);
+    const fallback = String.fromCharCode(...bytes);
+    console.log(`         ⚠️  Using fallback: "${fallback}"`);
+    return fallback;
   }
 }
 
@@ -46,18 +60,19 @@ export async function getAllPools(): Promise<PoolData[]> {
   console.log("📊 FETCHING ALL POOLS FROM BLOCKCHAIN");
   console.log("=".repeat(60));
   console.log("Pool Registry ID:", POOL_REGISTRY_ID);
+  console.log("Pools Table ID:", POOLS_TABLE_ID);
 
   try {
     const pools: PoolData[] = [];
     let hasNextPage = true;
     let cursor: string | null | undefined = null;
 
-    // Pagination loop - fetch all dynamic fields
+    // Pagination loop - fetch all dynamic fields from the pools Table
     while (hasNextPage) {
-      console.log(`\n🔍 Fetching dynamic fields${cursor ? ` (cursor: ${cursor.substring(0, 10)}...)` : ""}...`);
+      console.log(`\n🔍 Fetching dynamic fields from pools table${cursor ? ` (cursor: ${cursor.substring(0, 10)}...)` : ""}...`);
 
       const dynamicFields = await suiClient.getDynamicFields({
-        parentId: POOL_REGISTRY_ID,
+        parentId: POOLS_TABLE_ID, // Query the pools table directly!
         cursor,
         limit: 50, // Max 50 per page
       });
@@ -67,77 +82,105 @@ export async function getAllPools(): Promise<PoolData[]> {
       // Process each dynamic field
       for (const field of dynamicFields.data) {
         try {
-          // The field name is the pool ID (u64)
-          // We need to check if this is a pools table field
-          const fieldName = field.name;
+          console.log(`\n  🔍 Found dynamic field:`);
+          console.log(`      - Object ID: ${field.objectId}`);
+          console.log(`      - Name:`, JSON.stringify(field.name, null, 2));
+          console.log(`      - Type:`, field.objectType);
 
-          // Skip if not a valid field structure
-          if (!fieldName || typeof fieldName !== 'object') {
+          // Get the dynamic field object with full details
+          const fieldObject = await suiClient.getDynamicFieldObject({
+            parentId: POOLS_TABLE_ID, // Query from pools table
+            name: field.name,
+          });
+
+          console.log(`      - Field object data:`, JSON.stringify(fieldObject.data, null, 2));
+
+          if (!fieldObject.data) {
+            console.warn(`      ⚠️  No data in field object`);
             continue;
           }
 
-          // Check if this is a pool entry (name type should be u64)
-          const nameValue = (fieldName as any).value;
+          const content = fieldObject.data.content as any;
 
-          // Try to parse pool ID
+          if (!content || content.dataType !== 'moveObject') {
+            console.warn(`      ⚠️  Invalid content type`);
+            continue;
+          }
+
+          // Extract pool ID from the field name
           let poolId: number;
-          if (typeof nameValue === 'string') {
+          const nameValue = field.name;
+
+          if (typeof nameValue === 'object' && nameValue !== null) {
+            // Field name is an object with type and value
+            const value = (nameValue as any).value;
+            if (typeof value === 'string') {
+              poolId = parseInt(value, 10);
+            } else if (typeof value === 'number') {
+              poolId = value;
+            } else {
+              console.warn(`      ⚠️  Cannot parse pool ID from:`, value);
+              continue;
+            }
+          } else if (typeof nameValue === 'string') {
             poolId = parseInt(nameValue, 10);
           } else if (typeof nameValue === 'number') {
             poolId = nameValue;
           } else {
-            continue; // Skip non-numeric fields
+            console.warn(`      ⚠️  Unknown name format:`, nameValue);
+            continue;
           }
 
           if (isNaN(poolId)) {
+            console.warn(`      ⚠️  Invalid pool ID: ${poolId}`);
             continue;
           }
 
           console.log(`\n  📦 Processing Pool ID: ${poolId}`);
 
-          // Get the actual pool object data
-          const poolObject = await suiClient.getObject({
-            id: field.objectId,
-            options: {
-              showContent: true,
-              showType: true,
-            },
-          });
+          // Extract pool data from the 'value' field
+          // The structure is: { name: poolId, value: { type: "...", fields: { Pool data } } }
+          const valueObject = content.fields?.value;
 
-          // Extract pool data from the object
-          if (poolObject.data && poolObject.data.content) {
-            const content = poolObject.data.content as any;
-
-            // The pool data is in the 'value' field of the dynamic field
-            if (content.dataType === 'moveObject' && content.fields && content.fields.value) {
-              const poolFields = content.fields.value.fields || content.fields.value;
-
-              const metadataBytes = poolFields.metadata || [];
-              const active = poolFields.active || false;
-              const creator = poolFields.creator || "";
-
-              // Decode metadata bytes to string
-              const metadata = bytesToString(metadataBytes);
-
-              const poolData: PoolData = {
-                poolId,
-                metadata,
-                metadataBytes,
-                active,
-                creator,
-              };
-
-              pools.push(poolData);
-
-              console.log(`    ✓ Pool ${poolId}:`);
-              console.log(`      - Metadata (raw): [${metadataBytes.slice(0, 20).join(', ')}${metadataBytes.length > 20 ? '...' : ''}]`);
-              console.log(`      - Metadata (decoded): "${metadata}"`);
-              console.log(`      - Active: ${active}`);
-              console.log(`      - Creator: ${creator.substring(0, 10)}...`);
-            }
+          if (!valueObject) {
+            console.warn(`      ⚠️  No value field in content.fields`);
+            console.log(`      Available fields:`, Object.keys(content.fields || {}));
+            continue;
           }
+
+          // The actual Pool fields are nested inside value.fields
+          const poolFields = valueObject.fields || valueObject;
+
+          console.log(`      - Pool fields:`, JSON.stringify(poolFields, null, 2));
+
+          const metadataBytes = poolFields.metadata || [];
+          const active = poolFields.active !== undefined ? poolFields.active : false;
+          const creator = poolFields.creator || "";
+
+          console.log(`      - Metadata bytes:`, metadataBytes);
+          console.log(`      - Metadata length:`, metadataBytes.length);
+
+          // Decode metadata bytes to string
+          const metadata = bytesToString(metadataBytes);
+
+          const poolData: PoolData = {
+            poolId,
+            metadata,
+            metadataBytes,
+            active,
+            creator,
+          };
+
+          pools.push(poolData);
+
+          console.log(`    ✓ Pool ${poolId}:`);
+          console.log(`      - Metadata (raw): [${metadataBytes.slice(0, 20).join(', ')}${metadataBytes.length > 20 ? '...' : ''}]`);
+          console.log(`      - Metadata (decoded): "${metadata}"`);
+          console.log(`      - Active: ${active}`);
+          console.log(`      - Creator: ${creator.substring(0, 10)}...`);
         } catch (fieldError: any) {
-          console.warn(`    ⚠️  Error processing field:`, fieldError.message);
+          console.error(`    ❌ Error processing field:`, fieldError);
+          console.error(`       Message:`, fieldError.message);
           // Continue with next field
         }
       }
