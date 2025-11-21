@@ -104,7 +104,7 @@ export const CSVUploader = ({ poolId = DEFAULT_POOL_ID }: CSVUploaderProps) => {
 
     try {
       // Step 1: Encrypt with NaCl Box
-      setCurrentStep("Encrypting with NaCl Box...");
+      setCurrentStep("Encrypting...");
       setProgress(15);
       console.log("\n[STEP 1/4] NaCl BOX ASYMMETRIC ENCRYPTION");
       console.log("Using public key encryption - only the backend with the private key can decrypt");
@@ -213,7 +213,7 @@ export const CSVUploader = ({ poolId = DEFAULT_POOL_ID }: CSVUploaderProps) => {
             Upload Data to Encrypted Storage
           </CardTitle>
           <CardDescription>
-            CSV or Excel files will be encrypted with NaCl Box asymmetric encryption, stored on Walrus, and registered on Sui blockchain (Pool ID: {poolId})
+            CSV or Excel files will be encrypted with asymmetric encryption, stored on Walrus, and registered on Sui blockchain (Pool ID: {poolId})
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -463,9 +463,9 @@ export const CSVUploader = ({ poolId = DEFAULT_POOL_ID }: CSVUploaderProps) => {
                 1
               </div>
               <div>
-                <p className="font-medium">NaCl Box Encryption</p>
+                <p className="font-medium">Encryption</p>
                 <p className="text-muted-foreground">
-                  Your file is encrypted client-side using NaCl Box asymmetric encryption (X25519-XSalsa20-Poly1305)
+                  Your file is encrypted client-side using asymmetric encryption (X25519-XSalsa20-Poly1305)
                 </p>
               </div>
             </div>
