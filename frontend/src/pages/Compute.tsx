@@ -14,11 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Coins, Loader2, CheckCircle2, Download, Upload, FileJson, CheckCircle, AlertCircle, Copy, KeyRound, AlertTriangle } from "lucide-react";
+import { Coins, Loader2, CheckCircle2, Download, Upload, FileJson, CheckCircle, AlertCircle, Copy, KeyRound, AlertTriangle, ExternalLink, Wallet } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { encryptFileWithNaCl, encryptedDataToBlob } from "@/lib/naclEncryption";
 import { uploadToWalrus } from "@/lib/walrusStorage";
 import { getOrGenerateUserKeypair, UserKeypair } from "@/lib/userKeypair";
+import { createJob } from "@/lib/contractCalls";
+import { useWallet } from "@suiet/wallet-kit";
 import { toast } from "sonner";
 
 type ComputeStep = "idle" | "payment" | "extracting" | "computing" | "formatting" | "complete";
@@ -31,9 +33,16 @@ interface ModelSchemaUpload {
   encryptedSize: number;
 }
 
+interface JobCreationResult {
+  jobId?: number;
+  transactionDigest: string;
+  transactionUrl: string;
+}
+
 const Compute = () => {
   const { datasetId } = useParams();
   const navigate = useNavigate();
+  const wallet = useWallet();
   const [computeStep, setComputeStep] = useState<ComputeStep>("idle");
   const [progress, setProgress] = useState(0);
 
@@ -47,6 +56,10 @@ const Compute = () => {
   // User keypair state
   const [userKeypair, setUserKeypair] = useState<UserKeypair | null>(null);
   const [showPrivateKeyModal, setShowPrivateKeyModal] = useState(false);
+
+  // Job creation state
+  const [jobResult, setJobResult] = useState<JobCreationResult | null>(null);
+  const [creatingJob, setCreatingJob] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -187,26 +200,109 @@ const Compute = () => {
       return;
     }
 
+    // Check wallet connection
+    if (!wallet.connected) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    if (!wallet.account?.address) {
+      toast.error("Wallet address not available");
+      return;
+    }
+
+    setCreatingJob(true);
+    setComputeStep("payment");
+    setProgress(10);
+
     console.log("\n" + "=".repeat(60));
-    console.log("💰 INITIATING COMPUTE REQUEST");
+    console.log("💰 CREATING ML TRAINING JOB");
     console.log("=".repeat(60));
-    console.log("📋 Model Schema Info:");
-    console.log("  • Walrus Blob ID:", uploadResult.blobId);
-    console.log("  • Sui Object ID:", uploadResult.suiObjectId);
-    console.log("  • Sui Explorer URL:", uploadResult.explorerUrl);
-    console.log("\n👤 User Info:");
-    console.log("  • User Public Key:", userKeypair.publicKey);
-    console.log("  • User Private Key (in localStorage):", userKeypair.privateKey.substring(0, 20) + "... (truncated)");
-    console.log("\n💸 Payment Info:");
-    console.log("  • Payment Amount: 1 SUI");
+    console.log("📋 Job Parameters:");
+    console.log("  • Pool ID:", datasetId || 1);
+    console.log("  • Model WID (Walrus Blob ID):", uploadResult.blobId);
+    console.log("  • Buyer Public Key:", userKeypair.publicKey);
+    console.log("  • Epochs:", 10);
+    console.log("  • Learning Rate:", 100, "(represents 0.01)");
+    console.log("  • Price:", "0.001 SUI (1,000,000 MIST)");
+    console.log("  • Wallet Address:", wallet.account.address);
     console.log("=".repeat(60));
 
-    const steps: ComputeStep[] = ["payment", "extracting", "computing", "formatting", "complete"];
+    try {
+      // Payment: 0.001 SUI = 1,000,000 MIST
+      const PRICE_IN_MIST = "1000000";
+      const poolId = parseInt(datasetId || "1", 10);
 
-    for (let i = 0; i < steps.length; i++) {
-      setComputeStep(steps[i]);
-      setProgress(((i + 1) / steps.length) * 100);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Training parameters
+      const EPOCHS = 10;
+      const LEARNING_RATE = 100; // represents 0.01 (scaled by 10000)
+
+      setProgress(30);
+
+      // Call create_job on blockchain
+      const result = await createJob(
+        wallet.signAndExecuteTransaction,
+        poolId,
+        uploadResult.blobId, // model_wid
+        userKeypair.publicKey, // buyer_public_key
+        EPOCHS,
+        LEARNING_RATE,
+        PRICE_IN_MIST
+      );
+
+      setProgress(60);
+      setComputeStep("extracting");
+
+      console.log("\n✅ Job Created Successfully!");
+      console.log("Transaction Digest:", result.digest);
+
+      // Extract job ID from events
+      let jobId: number | undefined;
+      if (result.events) {
+        const jobCreatedEvent = result.events.find((e: any) =>
+          e.type?.includes("::jobs::JobCreated")
+        );
+        if (jobCreatedEvent && jobCreatedEvent.parsedJson) {
+          jobId = parseInt(jobCreatedEvent.parsedJson.job_id, 10);
+          console.log("Job ID:", jobId);
+        }
+      }
+
+      setProgress(80);
+      setComputeStep("computing");
+
+      const jobCreationResult: JobCreationResult = {
+        jobId,
+        transactionDigest: result.digest,
+        transactionUrl: `https://testnet.suivision.xyz/txblock/${result.digest}`,
+      };
+
+      setJobResult(jobCreationResult);
+
+      // Simulate remaining steps
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setProgress(90);
+      setComputeStep("formatting");
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setProgress(100);
+      setComputeStep("complete");
+
+      console.log("=".repeat(60));
+      console.log("✅ JOB CREATION COMPLETE");
+      console.log("=".repeat(60) + "\n");
+
+      toast.success("ML training job created successfully!");
+    } catch (error: any) {
+      console.error("\n❌ JOB CREATION FAILED");
+      console.error("Error:", error);
+      console.error("=".repeat(60) + "\n");
+
+      setComputeStep("idle");
+      setProgress(0);
+      toast.error(`Failed to create job: ${error.message || "Unknown error"}`);
+    } finally {
+      setCreatingJob(false);
     }
   };
 
@@ -462,15 +558,35 @@ const Compute = () => {
                   </div>
                 </div>
 
+                {/* Wallet Connection Warning */}
+                {!wallet.connected && uploadResult && (
+                  <Alert>
+                    <Wallet className="h-4 w-4" />
+                    <AlertDescription>
+                      Please connect your wallet to create a compute job.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 {/* Payment Button - Only show after successful upload */}
                 {uploadResult && (
                   <Button
                     onClick={handleRequestCompute}
+                    disabled={creatingJob || !wallet.connected}
                     className="w-full font-medium"
                     size="lg"
                   >
-                    <Coins className="w-4 h-4 mr-2" />
-                    Pay 1 SUI & Request Compute
+                    {creatingJob ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Job...
+                      </>
+                    ) : (
+                      <>
+                        <Coins className="w-4 h-4 mr-2" />
+                        Pay 0.001 SUI & Request Compute
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
@@ -488,35 +604,107 @@ const Compute = () => {
 
             {computeStep === "complete" && (
               <div className="space-y-6">
+                {/* Job Creation Success */}
+                {jobResult && (
+                  <Card className="border-green-500/50 bg-green-50/5">
+                    <div className="p-6 space-y-4">
+                      <div className="flex items-center gap-2 text-green-600">
+                        <CheckCircle className="h-5 w-5" />
+                        <h3 className="font-semibold">Job Created Successfully!</h3>
+                      </div>
+
+                      {/* Job ID */}
+                      {jobResult.jobId !== undefined && (
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground mb-1">Job ID</p>
+                          <p className="text-2xl font-bold">{jobResult.jobId}</p>
+                        </div>
+                      )}
+
+                      {/* Transaction Digest */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-sm font-medium text-muted-foreground">Transaction Digest</p>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText(jobResult.transactionDigest);
+                              toast.success("Transaction digest copied");
+                            }}
+                          >
+                            <Copy className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <p className="text-xs font-mono bg-muted p-2 rounded break-all">
+                          {jobResult.transactionDigest}
+                        </p>
+                      </div>
+
+                      {/* Explorer Link */}
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        asChild
+                      >
+                        <a href={jobResult.transactionUrl} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          View Transaction on Sui Explorer
+                        </a>
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+
+                {/* Job Details */}
                 <div className="border border-border rounded-lg p-6 bg-card">
-                  <h3 className="font-semibold tracking-tight mb-6">Computation Results</h3>
+                  <h3 className="font-semibold tracking-tight mb-6">Job Details</h3>
                   <div className="space-y-4 text-sm">
                     <div className="flex justify-between pb-4 border-b border-border">
-                      <span className="text-muted-foreground font-medium">Total Records Analyzed</span>
-                      <span className="font-semibold text-foreground">1,247</span>
+                      <span className="text-muted-foreground font-medium">Payment Amount</span>
+                      <span className="font-semibold text-foreground">0.001 SUI</span>
                     </div>
                     <div className="flex justify-between pb-4 border-b border-border">
-                      <span className="text-muted-foreground font-medium">Average Age</span>
-                      <span className="font-semibold text-foreground">42.3 years</span>
+                      <span className="text-muted-foreground font-medium">Training Epochs</span>
+                      <span className="font-semibold text-foreground">10</span>
+                    </div>
+                    <div className="flex justify-between pb-4 border-b border-border">
+                      <span className="text-muted-foreground font-medium">Learning Rate</span>
+                      <span className="font-semibold text-foreground">0.01</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground font-medium">Success Rate</span>
-                      <span className="font-semibold text-foreground">87.2%</span>
+                      <span className="text-muted-foreground font-medium">Status</span>
+                      <span className="font-semibold text-foreground">Pending</span>
                     </div>
                   </div>
                 </div>
 
+                {/* Next Steps Info */}
+                <Alert>
+                  <AlertDescription>
+                    Your job is now in the queue. The enclave will process it and you'll be able to claim your encrypted results using your private key.
+                  </AlertDescription>
+                </Alert>
+
                 <div className="flex gap-3">
-                  <Button className="flex-1 font-medium">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Results
-                  </Button>
                   <Button
                     onClick={() => navigate("/dashboard")}
+                    className="flex-1 font-medium"
+                  >
+                    View Dashboard
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setComputeStep("idle");
+                      setProgress(0);
+                      setUploadResult(null);
+                      setSchemaFile(null);
+                      setJobResult(null);
+                    }}
                     variant="outline"
                     className="flex-1 font-medium"
                   >
-                    Dashboard
+                    Create Another Job
                   </Button>
                 </div>
               </div>
