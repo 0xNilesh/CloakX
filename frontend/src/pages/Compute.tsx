@@ -6,7 +6,15 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Coins, Loader2, CheckCircle2, Download, Upload, FileJson, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Coins, Loader2, CheckCircle2, Download, Upload, FileJson, CheckCircle, AlertCircle, Copy, KeyRound, AlertTriangle } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { encryptFileWithNaCl, encryptedDataToBlob } from "@/lib/naclEncryption";
 import { uploadToWalrus } from "@/lib/walrusStorage";
@@ -38,6 +46,7 @@ const Compute = () => {
 
   // User keypair state
   const [userKeypair, setUserKeypair] = useState<UserKeypair | null>(null);
+  const [showPrivateKeyModal, setShowPrivateKeyModal] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -148,12 +157,22 @@ const Compute = () => {
       console.log("=".repeat(60) + "\n");
 
       toast.success("Model schema uploaded successfully!");
+
+      // Show the private key modal
+      setShowPrivateKeyModal(true);
     } catch (err: any) {
       console.error("\n❌ MODEL SCHEMA UPLOAD FAILED:", err);
       setUploadError(err.message || "Upload failed");
       toast.error("Upload failed: " + err.message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleCopyPrivateKey = () => {
+    if (userKeypair) {
+      navigator.clipboard.writeText(userKeypair.privateKey);
+      toast.success("Private key copied to clipboard");
     }
   };
 
@@ -505,6 +524,74 @@ const Compute = () => {
           </Card>
         </div>
       </div>
+
+      {/* Private Key Modal */}
+      <Dialog open={showPrivateKeyModal} onOpenChange={setShowPrivateKeyModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center">
+                <KeyRound className="w-6 h-6 text-amber-500" />
+              </div>
+              <DialogTitle className="text-2xl">Save Your Private Key</DialogTitle>
+            </div>
+            <DialogDescription className="text-base pt-2">
+              Please save your private key securely. This key is required for decrypting computation results in the next steps.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Warning Alert */}
+            <Alert className="border-amber-500/50 bg-amber-50/5">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              <AlertDescription className="text-sm ml-2">
+                <span className="font-semibold text-amber-500">Important:</span> This private key is NOT stored anywhere on our servers.
+                If you lose it, you won't be able to decrypt your computation results.
+              </AlertDescription>
+            </Alert>
+
+            {/* Private Key Display */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Your Private Key</Label>
+              <div className="relative">
+                <div className="bg-muted p-4 rounded-lg border border-border">
+                  <code className="text-xs font-mono break-all block">
+                    {userKeypair?.privateKey}
+                  </code>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="absolute top-2 right-2"
+                  onClick={handleCopyPrivateKey}
+                >
+                  <Copy className="w-3 h-3 mr-1" />
+                  Copy
+                </Button>
+              </div>
+            </div>
+
+            {/* Public Key Display */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-muted-foreground">Public Key (for reference)</Label>
+              <div className="bg-muted/50 p-3 rounded-lg border border-border">
+                <code className="text-xs font-mono break-all block text-muted-foreground">
+                  {userKeypair?.publicKey}
+                </code>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-col gap-2">
+            <div className="text-xs text-muted-foreground text-center mb-2">
+              Make sure you have copied and stored your private key securely before continuing.
+            </div>
+            <Button onClick={() => setShowPrivateKeyModal(false)} className="w-full">
+              I've Saved My Private Key
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
