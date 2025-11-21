@@ -18,7 +18,18 @@ export const POOL_REGISTRY_ID = "0xffca34785317c6dcde84e1245130983a67c814e14f6f4
 export const JOB_REGISTRY_ID = "0x480896e60dd02d226c05e2d5544402a527891b429653271a3c94a3d0cb89ed40";
 
 // Table IDs (for querying dynamic fields)
+// Pool Registry Tables
 export const POOLS_TABLE_ID = "0xbb34880c10a44c7a686f0f85848c44d74aa8a61e5fe68140ab84b00753741895";
+export const POOL_USERS_TABLE_ID = "0xbb8339224feed0f8680fd0f9beb634278360d7633a63bc994d02850de3e685cb";
+export const USER_DATA_TABLE_ID = "0x209bb236225692a4339538a57b61c66dceba7c2d887b5743f94c8c1ace435418";
+export const USER_POOLS_TABLE_ID = "0x1123a0e939c5f63a4895afd91ade507f719ee5098d1acddbb6504863208fcfa5";
+
+// Job Registry Tables
+export const JOBS_TABLE_ID = "0x70430e108bce95edfdfca91f4830646c0db67adb9618b70ebcc8ce657f814fad";
+export const JOBS_BY_CREATOR_TABLE_ID = "0xceb8e54b9fde331fdb7d87c1d22b5a278d425e9ba5403960ace13e1c14da748f";
+export const JOBS_BY_STATUS_TABLE_ID = "0x0607dcfd9303d3e8064b1aff2d1a5f937f130eaa59606ececb90980fc0f4bd77";
+export const PAYOUTS_TABLE_ID = "0x9bcbe19d50c27f5cee9565bd3626b6b72b6292284b532ccd28dba3f16871ccfa";
+export const JOB_RESULTS_TABLE_ID = "0x6558a558dd5f8db376cb2e164fb1b598151b3ebad5dc1a802a3b603d73816493";
 
 // Admin Objects (owned by publisher)
 export const ADMIN_CAP_ID = "0x83a50290d019da09bf3427821d62c646d3e2a59aab6d05a60433bd9474fb4e4e";

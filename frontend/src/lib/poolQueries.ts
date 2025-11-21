@@ -4,7 +4,7 @@
  */
 
 import { suiClient } from "./suiContract";
-import { POOL_REGISTRY_ID, POOLS_TABLE_ID } from "./contractConstants";
+import { POOL_REGISTRY_ID, POOLS_TABLE_ID, POOL_USERS_TABLE_ID } from "./contractConstants";
 
 /**
  * Pool data structure
@@ -15,6 +15,7 @@ export interface PoolData {
   metadataBytes: number[]; // Raw bytes
   active: boolean;
   creator: string;
+  contributorCount: number; // Total number of contributors
 }
 
 /**
@@ -163,12 +164,35 @@ export async function getAllPools(): Promise<PoolData[]> {
           // Decode metadata bytes to string
           const metadata = bytesToString(metadataBytes);
 
+          // Fetch contributor count from pool_users table
+          let contributorCount = 0;
+          try {
+            const poolUsersField = await suiClient.getDynamicFieldObject({
+              parentId: POOL_USERS_TABLE_ID,
+              name: {
+                type: "u64",
+                value: poolId.toString()
+              }
+            });
+
+            if (poolUsersField.data?.content?.dataType === 'moveObject') {
+              const usersContent = poolUsersField.data.content as any;
+              const addressVector = usersContent.fields?.value || [];
+              contributorCount = Array.isArray(addressVector) ? addressVector.length : 0;
+            }
+          } catch (error) {
+            // Pool has no contributors yet
+            console.log(`      ⓘ Pool ${poolId} has no contributors yet`);
+            contributorCount = 0;
+          }
+
           const poolData: PoolData = {
             poolId,
             metadata,
             metadataBytes,
             active,
             creator,
+            contributorCount,
           };
 
           pools.push(poolData);
@@ -178,6 +202,7 @@ export async function getAllPools(): Promise<PoolData[]> {
           console.log(`      - Metadata (decoded): "${metadata}"`);
           console.log(`      - Active: ${active}`);
           console.log(`      - Creator: ${creator.substring(0, 10)}...`);
+          console.log(`      - Contributors: ${contributorCount}`);
         } catch (fieldError: any) {
           console.error(`    ❌ Error processing field:`, fieldError);
           console.error(`       Message:`, fieldError.message);

@@ -76,7 +76,7 @@ const Datasets = () => {
         id: pool.poolId,
         name: pool.metadata || `Pool ${pool.poolId}`,
         description: `Data pool for ${pool.metadata}`,
-        contributors: 0, // This info is not in the pool data yet
+        contributors: pool.contributorCount,
         computePrice: "0.001 SUI",
         schema: [], // Schema info not available from pool
         category: pool.metadata || "General"
@@ -172,7 +172,7 @@ const Datasets = () => {
               <div className="flex items-center justify-between text-sm mb-6 pb-6 border-b border-border">
                 <div>
                   <span className="text-muted-foreground">
-                    {dataset.contributors > 0 ? dataset.contributors : "N/A"}
+                    {dataset.contributors > 0 ? dataset.contributors : "0"}
                   </span>
                   <span className="text-muted-foreground ml-1">contributors</span>
                 </div>
