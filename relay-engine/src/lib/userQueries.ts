@@ -7,7 +7,7 @@ import { suiClient } from "./suiContract";
 import {
   POOL_USERS_TABLE_ID,
   USER_POOLS_TABLE_ID,
-  USER_DATA_TABLE_ID,
+  POOL_DATA_TABLE_ID,
   PAYOUTS_TABLE_ID,
   JOBS_TABLE_ID,
 } from "./contractConstants";
@@ -69,7 +69,9 @@ export async function getPoolContributors(poolId: number): Promise<string[]> {
     const content = poolUsersField.data.content as any;
     const contributors = content.fields?.value || [];
 
-    console.log(`✅ Found ${contributors.length} contributors for pool ${poolId}`);
+    console.log(
+      `✅ Found ${contributors.length} contributors for pool ${poolId}`
+    );
     return contributors;
   } catch (error: any) {
     console.error(`❌ Error fetching contributors:`, error.message);
@@ -80,8 +82,12 @@ export async function getPoolContributors(poolId: number): Promise<string[]> {
 /**
  * Get pools that a user has contributed to (contribution history)
  */
-export async function getUserContributionHistory(userAddress: string): Promise<number[]> {
-  console.log(`\n📜 Fetching contribution history for: ${userAddress.substring(0, 10)}...`);
+export async function getUserContributionHistory(
+  userAddress: string
+): Promise<number[]> {
+  console.log(
+    `\n📜 Fetching contribution history for: ${userAddress.substring(0, 10)}...`
+  );
 
   try {
     const userPoolsField = await suiClient.getDynamicFieldObject({
@@ -100,7 +106,9 @@ export async function getUserContributionHistory(userAddress: string): Promise<n
     const content = userPoolsField.data.content as any;
     const poolIds = content.fields?.value || [];
 
-    console.log(`✅ User contributed to ${poolIds.length} pools: ${poolIds.join(", ")}`);
+    console.log(
+      `✅ User contributed to ${poolIds.length} pools: ${poolIds.join(", ")}`
+    );
     return poolIds.map((id: string) => parseInt(id, 10));
   } catch (error: any) {
     console.error(`❌ Error fetching contribution history:`, error.message);
@@ -111,8 +119,12 @@ export async function getUserContributionHistory(userAddress: string): Promise<n
 /**
  * Get active datasets (pools) that a user has contributed to
  */
-export async function getUserActiveDatasets(userAddress: string): Promise<PoolData[]> {
-  console.log(`\n🔄 Fetching active datasets for: ${userAddress.substring(0, 10)}...`);
+export async function getUserActiveDatasets(
+  userAddress: string
+): Promise<PoolData[]> {
+  console.log(
+    `\n🔄 Fetching active datasets for: ${userAddress.substring(0, 10)}...`
+  );
 
   const poolIds = await getUserContributionHistory(userAddress);
   const activePools: PoolData[] = [];
@@ -131,8 +143,12 @@ export async function getUserActiveDatasets(userAddress: string): Promise<PoolDa
 /**
  * Get all datasets (pools) with details that a user has contributed to
  */
-export async function getUserContributedDatasets(userAddress: string): Promise<PoolData[]> {
-  console.log(`\n📊 Fetching contributed datasets for: ${userAddress.substring(0, 10)}...`);
+export async function getUserContributedDatasets(
+  userAddress: string
+): Promise<PoolData[]> {
+  console.log(
+    `\n📊 Fetching contributed datasets for: ${userAddress.substring(0, 10)}...`
+  );
 
   const poolIds = await getUserContributionHistory(userAddress);
   const pools: PoolData[] = [];
