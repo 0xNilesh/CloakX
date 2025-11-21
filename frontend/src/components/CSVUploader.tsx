@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Upload, FileText, Lock, Cloud, CheckCircle, ExternalLink, Copy } from "lucide-react";
-import { encryptFile } from "@/lib/sealEncryption";
+import { encryptFileWithNaCl, encryptedDataToBlob } from "@/lib/naclEncryption";
 import { uploadToWalrus } from "@/lib/walrusStorage";
 import { toast } from "sonner";
 
@@ -78,27 +78,34 @@ export const CSVUploader = () => {
     console.log("=".repeat(60));
 
     try {
-      // Step 1: Encrypt with Seal
-      setCurrentStep("Encrypting with Seal...");
+      // Step 1: Encrypt with NaCl Box
+      setCurrentStep("Encrypting with NaCl Box...");
       setProgress(20);
-      console.log("\n[STEP 1/3] ENCRYPTION");
+      console.log("\n[STEP 1/3] NaCl BOX ASYMMETRIC ENCRYPTION");
+      console.log("Using public key encryption - only the backend with the private key can decrypt");
 
-      const encryptionResult = await encryptFile(file, 2);
+      const encryptionResult = await encryptFileWithNaCl(file);
 
       setProgress(50);
-      console.log("Encryption metadata:", {
-        fileName: encryptionResult.fileName,
-        originalSize: encryptionResult.metadata.originalSize,
-        encryptedSize: encryptionResult.encryptedData.length,
-        threshold: encryptionResult.metadata.threshold,
-      });
+      console.log("\n📊 Encryption Results:");
+      console.log("  • File name:", encryptionResult.fileName);
+      console.log("  • Original size:", encryptionResult.originalSize, "bytes");
+      console.log("  • Encrypted size:", encryptionResult.encryptedSize, "bytes");
+      console.log("  • Nonce:", encryptionResult.encryptedData.nonce);
+      console.log("  • Ephemeral Public Key:", encryptionResult.encryptedData.ephemeralPublicKey);
+
+      // Convert encrypted data to Blob for upload
+      console.log("\n📦 Preparing encrypted data for Walrus upload...");
+      const encryptedBlob = encryptedDataToBlob(encryptionResult.encryptedData);
+      console.log("  • Blob prepared, size:", encryptedBlob.size, "bytes");
 
       // Step 2: Upload to Walrus
       setCurrentStep("Uploading to Walrus...");
       setProgress(60);
       console.log("\n[STEP 2/3] WALRUS UPLOAD");
+      console.log("Uploading encrypted blob to Walrus decentralized storage...");
 
-      const uploadResult = await uploadToWalrus(encryptionResult.encryptedData, {
+      const uploadResult = await uploadToWalrus(encryptedBlob, {
         epochs: 5, // Store for 5 epochs
       });
 
@@ -108,10 +115,11 @@ export const CSVUploader = () => {
       setCurrentStep("Upload complete!");
       setProgress(100);
       console.log("\n[STEP 3/3] COMPLETE");
+      console.log("✅ File successfully encrypted and uploaded to Walrus!");
 
       const finalResult: UploadResult = {
         fileName: file.name,
-        encryptedSize: encryptionResult.encryptedData.length,
+        encryptedSize: encryptionResult.encryptedSize,
         blobId: uploadResult.blobId,
         suiObjectId: uploadResult.suiObjectId,
         explorerUrl: uploadResult.explorerUrl,
@@ -148,7 +156,7 @@ export const CSVUploader = () => {
             Upload Data to Encrypted Storage
           </CardTitle>
           <CardDescription>
-            CSV or Excel files will be encrypted with Seal and stored on Walrus decentralized storage
+            CSV or Excel files will be encrypted with NaCl Box asymmetric encryption and stored on Walrus decentralized storage
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -329,9 +337,9 @@ export const CSVUploader = () => {
                 1
               </div>
               <div>
-                <p className="font-medium">Seal Encryption</p>
+                <p className="font-medium">NaCl Box Encryption</p>
                 <p className="text-muted-foreground">
-                  Your file is encrypted client-side using Seal's threshold encryption
+                  Your file is encrypted client-side using NaCl Box asymmetric encryption (X25519-XSalsa20-Poly1305)
                 </p>
               </div>
             </div>
