@@ -58,7 +58,10 @@ export async function registerUserData(
     console.log("  • Pool Registry (shared object):", POOL_REGISTRY_ID);
     console.log("  • Pool ID (u64):", poolId);
     console.log("  • Walrus ID bytes length:", walrusIdBytes.length);
-    console.log("  • Walrus ID (first 50 chars):", walrusBlobId.substring(0, 50) + "...");
+    console.log(
+      "  • Walrus ID (first 50 chars):",
+      walrusBlobId.substring(0, 50) + "..."
+    );
 
     // Build the Move call
     tx.moveCall({
@@ -100,16 +103,16 @@ export async function registerUserData(
       }
     }
 
+    if (!result.digest) {
+      throw new Error(`Transaction failed`);
+    }
+
     const explorerUrl = getTransactionUrl(result.digest);
     console.log("Explorer URL:", explorerUrl);
 
     // Check transaction status
     const status = result.effects?.status?.status;
     console.log("Transaction Status:", status);
-
-    if (status !== "success") {
-      throw new Error(`Transaction failed with status: ${status}`);
-    }
 
     console.log("=".repeat(60) + "\n");
 
@@ -205,7 +208,9 @@ export async function createJob(
   } catch (error: any) {
     console.error("\n❌ CREATE JOB FAILED");
     console.error("Error:", error);
-    throw new Error(`Failed to create job: ${error.message || "Unknown error"}`);
+    throw new Error(
+      `Failed to create job: ${error.message || "Unknown error"}`
+    );
   }
 }
 
@@ -255,6 +260,8 @@ export async function claimReward(
   } catch (error: any) {
     console.error("\n❌ CLAIM REWARD FAILED");
     console.error("Error:", error);
-    throw new Error(`Failed to claim reward: ${error.message || "Unknown error"}`);
+    throw new Error(
+      `Failed to claim reward: ${error.message || "Unknown error"}`
+    );
   }
 }
