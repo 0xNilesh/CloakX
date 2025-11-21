@@ -80,20 +80,15 @@ SSL_CERT_FILE=/ca-certificates.crt
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/
 EOF
 
-RUN <<-EOF
-    set -eux
-    cd initramfs
-    find . -exec touch -hcd "@0" "{}" + -print0 \
-    | sort -z \
-    | cpio \
-        --null \
-        --create \
-        --verbose \
-        --reproducible \
-        --format=newc \
-    | gzip --best \
-    > /build_cpio/rootfs.cpio
-EOF
+RUN sh -c '\
+    set -eux; \
+    cd initramfs; \
+    find . -exec touch -hcd "@0" "{}" + > /dev/null; \
+    find . -print0 \
+        | sort -z \
+        | cpio --null --create --reproducible --format=newc \
+        | gzip -9 > /build_cpio/rootfs.cpio \
+'
 
 WORKDIR /build_eif
 RUN eif_build \
