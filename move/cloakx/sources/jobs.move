@@ -129,7 +129,7 @@ fun init(otw: JOBS, ctx: &mut TxContext) {
     table::add(&mut reg.jobs_by_status, 1u64, vector::empty<u64>());
     table::add(&mut reg.jobs_by_status, 2u64, vector::empty<u64>());
 
-    transfer::transfer(reg, sender);
+    transfer::share_object(reg);
 }
 
 // ==================== CREATE JOB ====================
