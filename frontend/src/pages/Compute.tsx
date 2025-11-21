@@ -18,7 +18,7 @@ import { Coins, Loader2, CheckCircle2, Download, Upload, FileJson, CheckCircle, 
 import { useParams, useNavigate } from "react-router-dom";
 import { encryptFileWithNaCl, encryptedDataToBlob } from "@/lib/naclEncryption";
 import { uploadToWalrus } from "@/lib/walrusStorage";
-import { getOrGenerateUserKeypair, UserKeypair } from "@/lib/userKeypair";
+import { getOrGenerateUserKeypair, getUserKeypair, UserKeypair } from "@/lib/userKeypair";
 import { createJob } from "@/lib/contractCalls";
 import { useWallet } from "@suiet/wallet-kit";
 import { toast } from "sonner";
@@ -97,6 +97,7 @@ const Compute = () => {
     try {
       // Step 0: Generate or retrieve user keypair
       console.log("\n[STEP 0/4] USER KEYPAIR SETUP");
+      const keypairExistsInStorage = getUserKeypair() !== null;
       const keypair = getOrGenerateUserKeypair();
       setUserKeypair(keypair);
 
@@ -171,8 +172,10 @@ const Compute = () => {
 
       toast.success("Model schema uploaded successfully!");
 
-      // Show the private key modal
-      setShowPrivateKeyModal(true);
+      // Show the private key modal only if keypair was newly generated
+      if (!keypairExistsInStorage) {
+        setShowPrivateKeyModal(true);
+      }
     } catch (err: any) {
       console.error("\n❌ MODEL SCHEMA UPLOAD FAILED:", err);
       setUploadError(err.message || "Upload failed");
