@@ -1,0 +1,83 @@
+/**
+ * CloakX Smart Contract Constants
+ * Addresses from deployed contracts on Sui Testnet
+ */
+
+// Package ID - Main CloakX package
+export const PACKAGE_ID = "0x5490bef7987ed1c72cf5750de3a269c197d6743a0359a360cca8472b5f1a815a";
+
+// Module Names
+export const MODULES = {
+  POOLS: "pools",
+  JOBS: "jobs",
+  USER_DATA: "user_data",
+} as const;
+
+// Shared Object IDs
+export const POOL_REGISTRY_ID = "0xffca34785317c6dcde84e1245130983a67c814e14f6f4ff086994575170a51dc";
+export const JOB_REGISTRY_ID = "0x480896e60dd02d226c05e2d5544402a527891b429653271a3c94a3d0cb89ed40";
+
+// Table IDs (for querying dynamic fields)
+// Pool Registry Tables
+export const POOLS_TABLE_ID = "0xbb34880c10a44c7a686f0f85848c44d74aa8a61e5fe68140ab84b00753741895";
+export const POOL_USERS_TABLE_ID = "0xbb8339224feed0f8680fd0f9beb634278360d7633a63bc994d02850de3e685cb";
+export const USER_DATA_TABLE_ID = "0x209bb236225692a4339538a57b61c66dceba7c2d887b5743f94c8c1ace435418";
+export const USER_POOLS_TABLE_ID = "0x1123a0e939c5f63a4895afd91ade507f719ee5098d1acddbb6504863208fcfa5";
+
+// Job Registry Tables
+export const JOBS_TABLE_ID = "0x70430e108bce95edfdfca91f4830646c0db67adb9618b70ebcc8ce657f814fad";
+export const JOBS_BY_CREATOR_TABLE_ID = "0xceb8e54b9fde331fdb7d87c1d22b5a278d425e9ba5403960ace13e1c14da748f";
+export const JOBS_BY_STATUS_TABLE_ID = "0x0607dcfd9303d3e8064b1aff2d1a5f937f130eaa59606ececb90980fc0f4bd77";
+export const PAYOUTS_TABLE_ID = "0x9bcbe19d50c27f5cee9565bd3626b6b72b6292284b532ccd28dba3f16871ccfa";
+export const JOB_RESULTS_TABLE_ID = "0x6558a558dd5f8db376cb2e164fb1b598151b3ebad5dc1a802a3b603d73816493";
+
+// Admin Objects (owned by publisher)
+export const ADMIN_CAP_ID = "0x83a50290d019da09bf3427821d62c646d3e2a59aab6d05a60433bd9474fb4e4e";
+export const UPGRADE_CAP_ID = "0x3df79134da79bd8446cf2c7bf4ee8f1256148e20ecd2541b527dcfe1810475aa";
+
+// Enclave Objects
+export const CAP_OBJECT_ID = "0x457631a7fad3b243cb6ecb72061ffe64884a5e3cfab30df71f468575f7783c49";
+export const ENCLAVE_CONFIG_ID = "0xb6f53fa0fcbc34b88d654edf96206e360ce5553b6b51433e24f319360e98ad41";
+
+// Addresses
+export const PUBLISHER_ADDRESS = "0x655de55c177944b888e022b8cd82f5134765028034a7858e34025032bf2bfd79";
+export const ENCLAVE_PACKAGE_ADDRESS = "0x06e385548bc3f9b157907fdf01f1d0c60f6614b0431b1cc0a84b3da4d5a02920";
+
+// Function Targets (pre-constructed for convenience)
+export const FUNCTION_TARGETS = {
+  // User Data Functions
+  REGISTER_USER_DATA: `${PACKAGE_ID}::${MODULES.USER_DATA}::register_user_data`,
+  GET_USER_DATA: `${PACKAGE_ID}::${MODULES.USER_DATA}::get_user_data`,
+  GET_POOL_USERS: `${PACKAGE_ID}::${MODULES.USER_DATA}::get_pool_users`,
+
+  // Pool Functions
+  CREATE_POOL: `${PACKAGE_ID}::${MODULES.POOLS}::create_pool`,
+  SET_POOL_ACTIVE: `${PACKAGE_ID}::${MODULES.POOLS}::set_pool_active`,
+  POOL_EXISTS: `${PACKAGE_ID}::${MODULES.POOLS}::pool_exists`,
+
+  // Job Functions
+  CREATE_JOB: `${PACKAGE_ID}::${MODULES.JOBS}::create_job`,
+  CANCEL_JOB: `${PACKAGE_ID}::${MODULES.JOBS}::cancel_job`,
+  COMPLETE_JOB: `${PACKAGE_ID}::${MODULES.JOBS}::complete_job`,
+  CLAIM_REWARD: `${PACKAGE_ID}::${MODULES.JOBS}::claim_reward`,
+} as const;
+
+// Default Pool ID (for testing - assumes pool 1 exists)
+export const DEFAULT_POOL_ID = 1;
+
+// Sui Testnet Explorer Base URL
+export const SUI_EXPLORER_BASE = "https://testnet.suivision.xyz";
+
+/**
+ * Get transaction explorer URL
+ */
+export function getTransactionUrl(digest: string): string {
+  return `${SUI_EXPLORER_BASE}/txblock/${digest}`;
+}
+
+/**
+ * Get object explorer URL
+ */
+export function getObjectUrl(objectId: string): string {
+  return `${SUI_EXPLORER_BASE}/object/${objectId}`;
+}

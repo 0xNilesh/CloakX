@@ -63,7 +63,7 @@ fun init(_: POOLS, ctx: &mut TxContext) {
         next_pool_id: 1,
     };
 
-    transfer::transfer(registry, publisher);
+    transfer::share_object(registry);
 }
 
 //
