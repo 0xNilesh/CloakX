@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,7 @@ import {
 import { createJob } from "@/lib/contractCalls";
 import { useWallet } from "@suiet/wallet-kit";
 import { toast } from "sonner";
+import { getPoolById, PoolData } from "@/lib/poolQueries";
 
 type ComputeStep =
   | "idle"
@@ -86,6 +87,30 @@ const Compute = () => {
   // Job creation state
   const [jobResult, setJobResult] = useState<JobCreationResult | null>(null);
   const [creatingJob, setCreatingJob] = useState(false);
+
+  // Pool data state
+  const [poolData, setPoolData] = useState<PoolData | null>(null);
+  const [loadingPool, setLoadingPool] = useState(true);
+
+  // Fetch pool data on component mount
+  useEffect(() => {
+    const fetchPoolData = async () => {
+      if (!datasetId) return;
+
+      setLoadingPool(true);
+      try {
+        const poolId = parseInt(datasetId, 10);
+        const pool = await getPoolById(poolId);
+        setPoolData(pool);
+      } catch (error) {
+        console.error("Failed to fetch pool data:", error);
+      } finally {
+        setLoadingPool(false);
+      }
+    };
+
+    fetchPoolData();
+  }, [datasetId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -427,30 +452,39 @@ const Compute = () => {
               <div className="space-y-6">
                 {/* Dataset Info */}
                 <div className="border border-border rounded-lg p-6 space-y-4 bg-card">
-                  <div className="flex justify-between items-center pb-4 border-b border-border">
-                    <span className="text-sm text-muted-foreground font-medium">
-                      Dataset
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      Healthcare Records
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pb-4 border-b border-border">
-                    <span className="text-sm text-muted-foreground font-medium">
-                      Data Contributors
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      142 sources
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground font-medium">
-                      Compute Cost
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      0.001 SUI
-                    </span>
-                  </div>
+                  {loadingPool ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                      <span className="ml-2 text-sm text-muted-foreground">Loading pool data...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center pb-4 border-b border-border">
+                        <span className="text-sm text-muted-foreground font-medium">
+                          Dataset
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {poolData?.metadata || "Unknown Dataset"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center pb-4 border-b border-border">
+                        <span className="text-sm text-muted-foreground font-medium">
+                          Data Contributors
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          {poolData?.contributorCount ?? 0} {poolData?.contributorCount === 1 ? 'source' : 'sources'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground font-medium">
+                          Compute Cost
+                        </span>
+                        <span className="font-semibold text-foreground">
+                          0.001 SUI
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Model Schema Upload Section */}
