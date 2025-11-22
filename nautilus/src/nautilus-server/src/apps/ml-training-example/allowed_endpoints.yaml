@@ -1,6 +1,0 @@
-# External endpoints for ML training app
-# Walrus blob storage aggregator endpoints for fetching training data
-endpoints:
-  - aggregator-mainnet.walrus.space      # Mainnet Walrus aggregator
-  - aggregator-testnet.walrus.space      # Testnet Walrus aggregator (for testing)
-  - aggregator.walrus.space              # Alternative aggregator
