@@ -88,7 +88,7 @@ const Dashboard = () => {
       case JobStatus.Cancelled:
         return { variant: "destructive" as const, label: "Cancelled" };
       default:
-        return { variant: "secondary" as const, label: "Unknown" };
+        return { variant: "secondary" as const, label: "Pending" };
     }
   };
 
@@ -523,95 +523,83 @@ const Dashboard = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-border">
-                      {buyerData.history.map((job) => {
-                        console.log('Job:', job);
-                        console.log('Job objectId:', job.objectId);
+                    <div className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {buyerData.history.map((job) => {
+                          console.log(`\n📋 Dashboard - Rendering Job #${job.jobId}:`);
+                          console.log(`  objectId: ${job.objectId}`);
+                          console.log(`  Explorer URL: https://testnet.suivision.xyz/object/${job.objectId}`);
 
-                        const statusBadge = getStatusBadge(job.status);
-                        const statusIcons = {
-                          [JobStatus.Completed]: (
-                            <CheckCircle2 className="w-4 h-4 text-green-600" />
-                          ),
-                          [JobStatus.Pending]: (
-                            <Clock className="w-4 h-4 text-orange-600" />
-                          ),
-                          [JobStatus.Cancelled]: (
-                            <XCircle className="w-4 h-4 text-red-600" />
-                          ),
-                        };
+                          const statusBadge = getStatusBadge(job.status);
+                          const statusIcons = {
+                            [JobStatus.Completed]: (
+                              <CheckCircle2 className="w-4 h-4 text-green-600" />
+                            ),
+                            [JobStatus.Pending]: (
+                              <Clock className="w-4 h-4 text-orange-600" />
+                            ),
+                            [JobStatus.Cancelled]: (
+                              <XCircle className="w-4 h-4 text-red-600" />
+                            ),
+                          };
 
-                        return (
-                          <div
-                            key={job.jobId}
-                            className="p-6 hover:bg-secondary/30 transition-colors"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4 flex-1">
-                                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
-                                  <Zap className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                  <p className="font-semibold text-foreground text-base mb-1">
-                                    {poolNames[job.poolId] ||
-                                      `Pool ${job.poolId}`}
-                                  </p>
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-xs text-muted-foreground font-mono">
-                                      Job #{job.jobId}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground">
-                                      •
-                                    </span>
+                          return (
+                            <a
+                              key={job.jobId}
+                              href={job.objectId ? `https://testnet.suivision.xyz/object/${job.objectId}` : '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group block"
+                            >
+                              <div className="h-full p-4 rounded-lg border border-border bg-card hover:bg-secondary/50 hover:border-primary/50 transition-all duration-200">
+                                {/* Header with icon and status */}
+                                <div className="flex items-start justify-between mb-3">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                                    <Zap className="w-5 h-5 text-white" />
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    {statusIcons[job.status as JobStatus]}
                                     <Badge
-                                      variant="outline"
-                                      className="text-xs font-normal"
+                                      variant={statusBadge.variant}
+                                      className="font-medium text-xs"
                                     >
-                                      {job.epochs} epochs
+                                      {statusBadge.label}
                                     </Badge>
                                   </div>
                                 </div>
-                              </div>
-                              <div className="flex items-center gap-4 ml-6">
-                                <div className="flex items-center gap-2">
-                                  {statusIcons[job.status as JobStatus]}
-                                  <Badge
-                                    variant={statusBadge.variant}
-                                    className="font-medium"
-                                  >
-                                    {statusBadge.label}
-                                  </Badge>
-                                </div>
-                                <div className="text-right min-w-[100px]">
-                                  <p className="text-lg font-bold text-foreground">
-                                    {formatSUI(job.price)}
+
+                                {/* Job details */}
+                                <div className="mb-3">
+                                  <p className="font-semibold text-foreground text-sm mb-1">
+                                    {poolNames[job.poolId] || `Pool ${job.poolId}`}
                                   </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    SUI
+                                  <p className="text-xs text-muted-foreground font-mono mb-2">
+                                    Job #{job.jobId}
                                   </p>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <Badge variant="outline" className="text-xs font-normal">
+                                      {job.epochs} epochs
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs font-normal">
+                                      {formatSUI(job.price)} SUI
+                                    </Badge>
+                                  </div>
                                 </div>
-                                {job.objectId && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-9 w-9 p-0"
-                                    asChild
-                                  >
-                                    <a
-                                      href={`https://testnet.suivision.xyz/object/${job.objectId}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      title="View Job on Sui Explorer"
-                                    >
-                                      <ExternalLink className="w-4 h-4" />
-                                    </a>
-                                  </Button>
-                                )}
+
+                                {/* Object ID with explorer hint */}
+                                <div className="pt-3 border-t border-border">
+                                  <div className="flex items-center justify-between">
+                                    <p className="text-[10px] text-muted-foreground font-mono truncate flex-1 mr-2">
+                                      {job.objectId ? `${job.objectId.slice(0, 10)}...${job.objectId.slice(-8)}` : 'No object ID'}
+                                    </p>
+                                    <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                            </a>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </Card>
