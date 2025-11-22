@@ -18,12 +18,15 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  ExternalLink,
+  Upload,
 } from "lucide-react";
 import { useWallet } from "@suiet/wallet-kit";
 import { useContributorStats } from "@/hooks/useContributorStats";
 import { useBuyerStats } from "@/hooks/useBuyerStats";
 import { getPoolById } from "@/lib/poolQueries";
 import { JobStatus } from "@/lib/jobQueries";
+import { getObjectUrl, JOBS_TABLE_ID, POOLS_TABLE_ID } from "@/lib/contractConstants";
 import { useEffect, useState as useReactState } from "react";
 
 const Dashboard = () => {
@@ -35,12 +38,13 @@ const Dashboard = () => {
   const contributorData = useContributorStats(userAddress);
   const buyerData = useBuyerStats(userAddress);
 
-  // Pool name cache
+  // Pool cache for names and object IDs
   const [poolNames, setPoolNames] = useReactState<Record<number, string>>({});
+  const [poolObjects, setPoolObjects] = useReactState<Record<number, { metadata: string; objectId?: string }>>({});
 
-  // Fetch pool names for display
+  // Fetch pool names and object IDs for display
   useEffect(() => {
-    const fetchPoolNames = async () => {
+    const fetchPoolData = async () => {
       const poolIds = new Set<number>();
 
       // Collect all pool IDs from both contributor and buyer data
@@ -48,19 +52,25 @@ const Dashboard = () => {
       buyerData.history.forEach((job) => poolIds.add(job.poolId));
 
       const names: Record<number, string> = {};
+      const objects: Record<number, { metadata: string; objectId?: string }> = {};
       for (const poolId of poolIds) {
         if (!poolNames[poolId]) {
           const pool = await getPoolById(poolId);
           if (pool) {
             names[poolId] = pool.metadata || `Pool ${poolId}`;
+            objects[poolId] = {
+              metadata: pool.metadata || `Pool ${poolId}`,
+              objectId: pool.objectId
+            };
           }
         }
       }
       setPoolNames((prev) => ({ ...prev, ...names }));
+      setPoolObjects((prev) => ({ ...prev, ...objects }));
     };
 
     if (contributorData.poolStats.length > 0 || buyerData.history.length > 0) {
-      fetchPoolNames();
+      fetchPoolData();
     }
   }, [contributorData.poolStats, buyerData.history]);
 
@@ -280,65 +290,112 @@ const Dashboard = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-border">
-                      {contributorData.poolStats.map((poolStat) => (
-                        <div
-                          key={poolStat.poolId}
-                          className="p-6 hover:bg-secondary/30 transition-colors"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4 flex-1">
-                              <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-                                <Database className="w-6 h-6 text-white" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-semibold text-foreground text-base mb-1">
-                                  {poolStat.poolMetadata ||
-                                    `Pool ${poolStat.poolId}`}
-                                </p>
-                                <div className="flex items-center gap-3">
-                                  <span className="text-xs text-muted-foreground font-mono">
+                    <div className="space-y-4">
+                      {contributorData.poolStats.map((poolStat) => {
+                        console.log('Pool Stat:', poolStat);
+                        console.log('UserData Objects:', poolStat.userDataObjects);
+                        return (
+                        <Card key={poolStat.poolId} className="overflow-hidden">
+                          {/* Pool Header */}
+                          <div className="bg-secondary/30 px-6 py-4 border-b border-border">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                                  <Database className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                  <h3 className="font-semibold text-base text-foreground mb-0.5">
+                                    {poolStat.poolMetadata || `Pool ${poolStat.poolId}`}
+                                  </h3>
+                                  <p className="text-xs text-muted-foreground font-mono">
                                     Pool #{poolStat.poolId}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    •
-                                  </span>
-                                  <Badge
-                                    variant="outline"
-                                    className="text-xs font-normal"
-                                  >
-                                    {poolStat.totalJobs} total jobs
-                                  </Badge>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-6 ml-6">
-                              <div className="text-center">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-                                  <p className="text-sm font-semibold text-foreground">
-                                    {poolStat.completedJobs}
                                   </p>
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                  Completed
-                                </p>
                               </div>
-                              <div className="text-center">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                  <Clock className="w-3.5 h-3.5 text-orange-600" />
-                                  <p className="text-sm font-semibold text-foreground">
-                                    {poolStat.pendingJobs}
-                                  </p>
+
+                              {/* Stats Summary */}
+                              <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-2">
+                                  <div className="text-center px-3 py-1 rounded-lg bg-green-500/10">
+                                    <p className="text-lg font-bold text-green-600">
+                                      {poolStat.completedJobs}
+                                    </p>
+                                    <p className="text-[10px] text-green-600/80 uppercase tracking-wide">
+                                      Completed
+                                    </p>
+                                  </div>
+                                  <div className="text-center px-3 py-1 rounded-lg bg-orange-500/10">
+                                    <p className="text-lg font-bold text-orange-600">
+                                      {poolStat.pendingJobs}
+                                    </p>
+                                    <p className="text-[10px] text-orange-600/80 uppercase tracking-wide">
+                                      Pending
+                                    </p>
+                                  </div>
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                  Pending
-                                </p>
+                                <Badge variant="secondary" className="font-semibold">
+                                  {poolStat.totalJobs} total jobs
+                                </Badge>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+
+                          {/* Contributions Section */}
+                          {poolStat.userDataObjects && poolStat.userDataObjects.length > 0 ? (
+                            <div className="p-6">
+                              <div className="flex items-center gap-2 mb-4">
+                                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                  <Upload className="w-4 h-4 text-primary" />
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-foreground">
+                                    Your Data Contributions
+                                  </h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    {poolStat.userDataObjects.length} {poolStat.userDataObjects.length === 1 ? 'dataset' : 'datasets'} uploaded to this pool
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                {poolStat.userDataObjects.map((userData, idx) => (
+                                  <a
+                                    key={userData.objectId}
+                                    href={`https://testnet.suivision.xyz/object/${userData.objectId}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group"
+                                  >
+                                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-secondary/50 hover:border-primary/50 transition-all duration-200">
+                                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0">
+                                        <Database className="w-5 h-5 text-white" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-semibold text-foreground mb-0.5">
+                                          Contribution #{idx + 1}
+                                        </p>
+                                        <p className="text-[10px] text-muted-foreground font-mono truncate">
+                                          {userData.objectId.slice(0, 8)}...{userData.objectId.slice(-6)}
+                                        </p>
+                                      </div>
+                                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                                    </div>
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="p-6 text-center">
+                              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-3">
+                                <Database className="w-6 h-6 text-muted-foreground" />
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                No contributions to this pool yet
+                              </p>
+                            </div>
+                          )}
+                        </Card>
+                      )})}
                     </div>
                   )}
                 </Card>
@@ -468,6 +525,9 @@ const Dashboard = () => {
                   ) : (
                     <div className="divide-y divide-border">
                       {buyerData.history.map((job) => {
+                        console.log('Job:', job);
+                        console.log('Job objectId:', job.objectId);
+
                         const statusBadge = getStatusBadge(job.status);
                         const statusIcons = {
                           [JobStatus.Completed]: (
@@ -512,7 +572,7 @@ const Dashboard = () => {
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-6 ml-6">
+                              <div className="flex items-center gap-4 ml-6">
                                 <div className="flex items-center gap-2">
                                   {statusIcons[job.status as JobStatus]}
                                   <Badge
@@ -530,6 +590,23 @@ const Dashboard = () => {
                                     SUI
                                   </p>
                                 </div>
+                                {job.objectId && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-9 w-9 p-0"
+                                    asChild
+                                  >
+                                    <a
+                                      href={`https://testnet.suivision.xyz/object/${job.objectId}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      title="View Job on Sui Explorer"
+                                    >
+                                      <ExternalLink className="w-4 h-4" />
+                                    </a>
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           </div>

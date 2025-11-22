@@ -25,6 +25,7 @@ export enum JobStatus {
  */
 export interface JobData {
   jobId: number;
+  objectId?: string; // Sui object ID for explorer links
   creator: string;
   poolId: number;
   modelWid: string; // Walrus blob ID (decoded from bytes)
@@ -108,8 +109,15 @@ export async function getJobById(jobId: number): Promise<JobData | null> {
 
     const jobFields = content.fields?.value?.fields || content.fields;
 
+    // Extract the Job object's own ID (the actual Job struct has an id field)
+    // This is the correct object ID to use for explorer links
+    const jobObjectId = jobFields.id?.id;
+
+    console.log(`  Job object ID (jobFields.id.id): ${jobObjectId}`);
+
     const jobData: JobData = {
       jobId,
+      objectId: jobObjectId, // Store the Job object ID for explorer links
       creator: jobFields.creator,
       poolId: parseInt(jobFields.pool_id, 10),
       modelWid: bytesToString(jobFields.model_wid || []),
