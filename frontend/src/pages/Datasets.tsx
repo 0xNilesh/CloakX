@@ -98,16 +98,6 @@ const Datasets = () => {
                 Contribute your data securely or request computations on datasets. All data remains encrypted and private throughout the process.
               </p>
             </div>
-            <Button
-              onClick={handleFetchPools}
-              disabled={loading}
-              variant="outline"
-              size="sm"
-              className="ml-6 gap-2"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Fetch Pools
-            </Button>
           </div>
 
           {/* {pools.length > 0 && (
