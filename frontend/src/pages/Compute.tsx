@@ -424,7 +424,7 @@ const Compute = () => {
           <Button
             variant="ghost"
             onClick={() => navigate("/datasets")}
-            className="mb-8 font-medium text-muted-foreground hover:text-white"
+            className="mb-10 font-medium text-muted-foreground hover:text-foreground"
           >
             ← Back to Datasets
           </Button>
