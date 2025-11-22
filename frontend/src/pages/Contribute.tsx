@@ -115,111 +115,114 @@ const Contribute = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-3xl mx-auto">
+      <div className="container mx-auto px-6 py-16">
+        <div className="max-w-4xl mx-auto">
           <Button
             variant="ghost"
             onClick={() => navigate("/datasets")}
-            className="mb-8 font-medium text-muted-foreground hover:text-white"
+            className="mb-10 font-medium text-muted-foreground hover:text-foreground"
           >
             ← Back to Datasets
           </Button>
 
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold tracking-tight mb-4">
               Contribute to {loading ? "Dataset" : schema.name}
             </h1>
-            <p className="text-muted-foreground">
-              {datasetId && `Pool ID: ${datasetId} • `}Upload your encrypted data to the marketplace
+            <p className="text-muted-foreground leading-relaxed">
+              {datasetId && <span className="text-sm bg-secondary px-3 py-1 rounded-full mr-2 font-medium">Pool ID: {datasetId}</span>}
+              Upload your encrypted data to the marketplace
             </p>
           </div>
 
           <CSVUploader poolId={datasetId ? parseInt(datasetId) : undefined} />
 
-          <Card className="p-8 mt-8 border border-border space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold tracking-tight mb-4">
-                Data Schema Requirements
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Your file must contain the following fields in the exact order specified below:
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {schema.fields.map((field) => (
-                  <code key={field} className="px-4 py-2 bg-secondary rounded text-xs font-mono border border-border">
-                    {field}
-                  </code>
-                ))}
+          <Card className="mt-12 border border-border overflow-hidden">
+            <div className="p-8 space-y-8">
+              <div>
+                <h3 className="text-xl font-semibold tracking-tight mb-3">
+                  Data Schema Requirements
+                </h3>
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  Your file must contain the following fields in the exact order specified below:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {schema.fields.map((field) => (
+                    <code key={field} className="px-4 py-2 bg-secondary rounded-lg text-xs font-mono border border-border">
+                      {field}
+                    </code>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="pt-4 border-t border-border">
-              <h4 className="text-sm font-semibold mb-3">Field Specifications</h4>
-              <div className="space-y-3 text-sm">
-                {schema.specifications.map((spec) => (
-                  <div key={spec.field} className="grid grid-cols-[120px_1fr] gap-2">
-                    <code className="text-xs font-mono text-primary">{spec.field}</code>
-                    <span className="text-muted-foreground">{spec.description}</span>
-                  </div>
-                ))}
+              <div className="pt-6 border-t border-border">
+                <h4 className="text-sm font-semibold mb-4 uppercase tracking-wide text-muted-foreground">Field Specifications</h4>
+                <div className="space-y-4 text-sm">
+                  {schema.specifications.map((spec) => (
+                    <div key={spec.field} className="grid grid-cols-[140px_1fr] gap-4">
+                      <code className="text-xs font-mono text-primary font-semibold">{spec.field}</code>
+                      <span className="text-muted-foreground leading-relaxed">{spec.description}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="pt-4 border-t border-border">
-              <h4 className="text-sm font-semibold mb-3">File Format Guidelines</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span><strong className="text-foreground">File Types:</strong> CSV (.csv) or Excel (.xlsx, .xls) formats accepted</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span><strong className="text-foreground">Encoding:</strong> UTF-8 encoding recommended for best compatibility</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span><strong className="text-foreground">Headers:</strong> First row must contain column headers matching the schema exactly</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span><strong className="text-foreground">Column Order:</strong> Columns must appear in the exact order shown above</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span><strong className="text-foreground">Data Quality:</strong> Ensure no missing values in required fields</span>
-                </li>
-              </ul>
-            </div>
+              <div className="pt-6 border-t border-border">
+                <h4 className="text-sm font-semibold mb-4 uppercase tracking-wide text-muted-foreground">File Format Guidelines</h4>
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-0.5 font-bold">•</span>
+                    <span><strong className="text-foreground font-medium">File Types:</strong> CSV (.csv) or Excel (.xlsx, .xls) formats accepted</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-0.5 font-bold">•</span>
+                    <span><strong className="text-foreground font-medium">Encoding:</strong> UTF-8 encoding recommended for best compatibility</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-0.5 font-bold">•</span>
+                    <span><strong className="text-foreground font-medium">Headers:</strong> First row must contain column headers matching the schema exactly</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-0.5 font-bold">•</span>
+                    <span><strong className="text-foreground font-medium">Column Order:</strong> Columns must appear in the exact order shown above</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-primary mt-0.5 font-bold">•</span>
+                    <span><strong className="text-foreground font-medium">Data Quality:</strong> Ensure no missing values in required fields</span>
+                  </li>
+                </ul>
+              </div>
 
-            <div className="pt-4 border-t border-border">
-              <h4 className="text-sm font-semibold mb-3">Example CSV Format</h4>
-              <div className="bg-muted/50 p-4 rounded-lg border border-border">
-                <pre className="text-xs font-mono overflow-x-auto">
+              <div className="pt-6 border-t border-border">
+                <h4 className="text-sm font-semibold mb-4 uppercase tracking-wide text-muted-foreground">Example CSV Format</h4>
+                <div className="bg-secondary p-5 rounded-lg border border-border">
+                  <pre className="text-xs font-mono overflow-x-auto text-foreground">
 {schema.example}
-                </pre>
+                  </pre>
+                </div>
               </div>
-            </div>
 
-            <div className="pt-4 border-t border-border">
-              <h4 className="text-sm font-semibold mb-3">Privacy & Security</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600 mt-0.5">✓</span>
-                  <span><strong className="text-foreground">Client-Side Encryption:</strong> Your data is encrypted in your browser before upload using NaCl Box (X25519-XSalsa20-Poly1305)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600 mt-0.5">✓</span>
-                  <span><strong className="text-foreground">Decentralized Storage:</strong> Encrypted data is stored on Walrus, ensuring no single point of failure</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600 mt-0.5">✓</span>
-                  <span><strong className="text-foreground">Blockchain Registry:</strong> Data ownership is registered on Sui blockchain for transparent tracking</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-600 mt-0.5">✓</span>
-                  <span><strong className="text-foreground">Earn Rewards:</strong> Receive SUI tokens when your data is used for computations</span>
-                </li>
-              </ul>
+              <div className="pt-6 border-t border-border">
+                <h4 className="text-sm font-semibold mb-4 uppercase tracking-wide text-muted-foreground">Privacy & Security</h4>
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-3">
+                    <span className="text-[hsl(var(--badge-green))] mt-0.5 font-bold text-base">✓</span>
+                    <span><strong className="text-foreground font-medium">Client-Side Encryption:</strong> Your data is encrypted in your browser before upload using NaCl Box (X25519-XSalsa20-Poly1305)</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-[hsl(var(--badge-green))] mt-0.5 font-bold text-base">✓</span>
+                    <span><strong className="text-foreground font-medium">Decentralized Storage:</strong> Encrypted data is stored on Walrus, ensuring no single point of failure</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-[hsl(var(--badge-green))] mt-0.5 font-bold text-base">✓</span>
+                    <span><strong className="text-foreground font-medium">Blockchain Registry:</strong> Data ownership is registered on Sui blockchain for transparent tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-[hsl(var(--badge-green))] mt-0.5 font-bold text-base">✓</span>
+                    <span><strong className="text-foreground font-medium">Earn Rewards:</strong> Receive SUI tokens when your data is used for computations</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </Card>
         </div>
