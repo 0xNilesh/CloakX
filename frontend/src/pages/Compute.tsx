@@ -463,9 +463,80 @@ const Compute = () => {
                       Upload Model Schema (JSON)
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Upload the neural network schema for your ML model
-                      training
+                      Upload a JSON file defining your neural network architecture for ML model training
                     </p>
+                  </div>
+
+                  {/* Schema Requirements Explanation */}
+                  <div className="space-y-3 p-4 bg-muted/30 rounded-lg border border-border/50">
+                    <h4 className="text-sm font-semibold text-foreground">What is a Model Schema?</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      A model schema defines the structure of your neural network, including layer types, dimensions,
+                      activation functions, and hyperparameters. This JSON file tells the training system how to build
+                      and train your ML model on the encrypted dataset.
+                    </p>
+                  </div>
+
+                  {/* JSON Format Example */}
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-foreground">Example Model Schema Format</h4>
+                    <div className="bg-muted/50 p-3 rounded-lg border border-border">
+                      <pre className="text-xs font-mono overflow-x-auto">
+{`{
+  "model_type": "neural_network",
+  "architecture": {
+    "input_layer": {
+      "size": 4,
+      "description": "Input features from dataset"
+    },
+    "hidden_layers": [
+      {
+        "type": "dense",
+        "units": 64,
+        "activation": "relu"
+      },
+      {
+        "type": "dense",
+        "units": 32,
+        "activation": "relu"
+      }
+    ],
+    "output_layer": {
+      "units": 1,
+      "activation": "sigmoid"
+    }
+  },
+  "hyperparameters": {
+    "optimizer": "adam",
+    "loss_function": "binary_crossentropy",
+    "metrics": ["accuracy"]
+  }
+}`}
+                      </pre>
+                    </div>
+                  </div>
+
+                  {/* Schema Requirements */}
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-foreground">Schema Requirements</h4>
+                    <ul className="space-y-2 text-xs text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Valid JSON:</strong> File must be properly formatted JSON with no syntax errors</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Model Type:</strong> Specify the type of model (e.g., neural_network, linear_regression, decision_tree)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Architecture:</strong> Define input, hidden, and output layers with dimensions matching your data</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Hyperparameters:</strong> Include optimizer, loss function, and evaluation metrics</span>
+                      </li>
+                    </ul>
                   </div>
 
                   {/* File Input */}
@@ -704,6 +775,99 @@ const Compute = () => {
                   </Alert>
                 )}
 
+                {/* What to Expect Section */}
+                {uploadResult && (
+                  <div className="border border-border rounded-lg p-5 space-y-4 bg-muted/20">
+                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      What Happens Next?
+                    </h4>
+                    <div className="space-y-3 text-xs text-muted-foreground">
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-xs font-semibold text-primary">1</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">Payment Processing</p>
+                          <p className="text-muted-foreground">Your 0.001 SUI payment is processed and held in escrow until job completion</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-xs font-semibold text-primary">2</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">Job Queue</p>
+                          <p className="text-muted-foreground">Your training job is added to the processing queue on Sui blockchain</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-xs font-semibold text-primary">3</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">Secure Training in TEE</p>
+                          <p className="text-muted-foreground">Nautilus enclave retrieves encrypted data, trains your model for 10 epochs at 0.01 learning rate in a secure environment</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-xs font-semibold text-primary">4</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">Encrypted Results</p>
+                          <p className="text-muted-foreground">Trained model weights are encrypted with your public key and stored on-chain</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-xs font-semibold text-primary">5</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">Claim & Decrypt</p>
+                          <p className="text-muted-foreground">Use your private key to decrypt and download the trained model weights</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Expected Results Section */}
+                {uploadResult && (
+                  <div className="border border-border rounded-lg p-5 space-y-4 bg-gradient-to-br from-primary/5 to-primary/10">
+                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      What Results Will You Receive?
+                    </h4>
+                    <ul className="space-y-2 text-xs text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Trained Model Weights:</strong> Neural network parameters optimized on the encrypted dataset</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Training Metrics:</strong> Loss values, accuracy scores, and convergence statistics for each epoch</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Model Performance:</strong> Validation metrics showing how well your model learned from the data</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Deployment Ready:</strong> Model weights in standard format ready for inference and deployment</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span><strong className="text-foreground">Privacy Preserved:</strong> You never see raw data - only the trained model results</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+
                 {/* Payment Button - Only show after successful upload */}
                 {uploadResult && (
                   <Button
@@ -847,14 +1011,166 @@ const Compute = () => {
                   </div>
                 </div>
 
-                {/* Next Steps Info */}
-                <Alert>
-                  <AlertDescription>
-                    Your job is now in the queue. The enclave will process it
-                    and you'll be able to claim your encrypted results using
-                    your private key.
-                  </AlertDescription>
-                </Alert>
+                {/* Post-Completion Expectations */}
+                <div className="border border-border rounded-lg p-6 space-y-5 bg-card">
+                  <div className="flex items-center gap-3 pb-3 border-b border-border">
+                    <div className="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-base font-semibold tracking-tight">What to Expect Once Training Completes</h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Timeline */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Processing Time
+                      </h4>
+                      <p className="text-xs text-muted-foreground pl-6">
+                        Training typically completes within 5-15 minutes depending on dataset size and queue length.
+                        You'll be able to monitor job status from your dashboard.
+                      </p>
+                    </div>
+
+                    {/* Notification */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        Job Status Updates
+                      </h4>
+                      <p className="text-xs text-muted-foreground pl-6">
+                        Check your dashboard to see when the job status changes from "Pending" to "Completed".
+                        The blockchain will emit a completion event that you can track.
+                      </p>
+                    </div>
+
+                    {/* Claiming Results */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                        </svg>
+                        Claiming Your Results
+                      </h4>
+                      <div className="pl-6 space-y-2">
+                        <p className="text-xs text-muted-foreground">
+                          Once complete, you can claim your encrypted results:
+                        </p>
+                        <ol className="space-y-1.5 text-xs text-muted-foreground">
+                          <li className="flex items-start gap-2">
+                            <span className="font-semibold text-foreground">1.</span>
+                            <span>Navigate to your <strong className="text-foreground">Dashboard</strong> and locate the completed job</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="font-semibold text-foreground">2.</span>
+                            <span>Click <strong className="text-foreground">"Claim Reward"</strong> to retrieve the encrypted model from the enclave</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="font-semibold text-foreground">3.</span>
+                            <span>Use your <strong className="text-foreground">private key</strong> (saved earlier) to decrypt the results</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="font-semibold text-foreground">4.</span>
+                            <span>Download the <strong className="text-foreground">trained model weights</strong> and performance metrics</span>
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    {/* Result Contents */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        What's Included in Results
+                      </h4>
+                      <div className="pl-6 space-y-1.5 text-xs text-muted-foreground">
+                        <div className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong className="text-foreground">Model Weights File:</strong> Trained neural network parameters in standard format (e.g., .h5, .pth, .pb)</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong className="text-foreground">Training Report:</strong> JSON file with epoch-by-epoch loss and accuracy metrics</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong className="text-foreground">Performance Summary:</strong> Final validation scores and model statistics</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong className="text-foreground">Training Configuration:</strong> Hyperparameters used during training for reproducibility</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span><strong className="text-foreground">Convergence Plots:</strong> Visual charts showing training progress (if applicable)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Next Steps After Download */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Using Your Trained Model
+                      </h4>
+                      <div className="pl-6 space-y-1.5 text-xs text-muted-foreground">
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary mt-0.5">•</span>
+                          <span><strong className="text-foreground">Load & Deploy:</strong> Import weights into your ML framework (TensorFlow, PyTorch, etc.)</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary mt-0.5">•</span>
+                          <span><strong className="text-foreground">Make Predictions:</strong> Use the model for inference on new data</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary mt-0.5">•</span>
+                          <span><strong className="text-foreground">Further Training:</strong> Fine-tune on your own data if needed</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-primary mt-0.5">•</span>
+                          <span><strong className="text-foreground">Integration:</strong> Integrate into your applications and services</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Important Notes */}
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <div className="bg-amber-50/5 border border-amber-500/20 rounded-lg p-4 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <h5 className="text-xs font-semibold text-amber-500">Important Reminders</h5>
+                        </div>
+                        <ul className="space-y-1 text-xs text-muted-foreground pl-6">
+                          <li className="flex items-start gap-2">
+                            <span>•</span>
+                            <span>Keep your <strong className="text-foreground">private key secure</strong> - it's required to decrypt results</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span>•</span>
+                            <span>Results remain on-chain and can be <strong className="text-foreground">claimed anytime</strong> - no rush</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span>•</span>
+                            <span>Contributors earn rewards automatically when you claim results</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="flex gap-3">
                   <Button
