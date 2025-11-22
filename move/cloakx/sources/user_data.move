@@ -5,9 +5,9 @@ use cloakx::pools::{
     pool_exists,
     is_pool_active,
     borrow_mut_pool_users,
-    borrow_mut_user_data,
+    borrow_mut_pool_data,
     borrow_mut_user_pools,
-    borrow_user_data,
+    borrow_pool_data,
     borrow_pool_users,
     borrow_user_pools
 };
@@ -80,16 +80,16 @@ public fun register_user_data(
     vector::push_back(pv_ref, caller);
 
     //
-    // Add caller to user_data[caller]
+    // Add walrus to pool_data
     //
-    let user_data_tbl = borrow_mut_user_data(registry);
+    let pool_data_tbl = borrow_mut_pool_data(registry);
 
-    if (!table::contains(user_data_tbl, caller)) {
-        table::add(user_data_tbl, caller, vector::empty<address>());
+    if (!table::contains(pool_data_tbl, pool_id)) {
+        table::add(pool_data_tbl, pool_id, vector::empty<vector<u8>>());
     };
 
-    let uv_ref = table::borrow_mut(user_data_tbl, caller);
-    vector::push_back(uv_ref, caller);
+    let uv_ref = table::borrow_mut(pool_data_tbl, pool_id);
+    vector::push_back(uv_ref, walrus_id);
 
     //
     // Add pool_id to user_pools[caller]
@@ -111,9 +111,9 @@ public fun register_user_data(
 // GETTERS
 //
 
-public fun get_user_data(user: address, registry: &PoolRegistry): &vector<address> {
-    let tbl = borrow_user_data(registry);
-    table::borrow(tbl, user)
+public fun get_pool_data(pool: u64, registry: &PoolRegistry): &vector<vector<u8>> {
+    let tbl = borrow_pool_data(registry);
+    table::borrow(tbl, pool)
 }
 
 public fun get_pool_users(pool_id: u64, registry: &PoolRegistry): &vector<address> {

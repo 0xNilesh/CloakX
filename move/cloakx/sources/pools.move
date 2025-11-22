@@ -2,9 +2,6 @@ module cloakx::pools;
 
 use sui::table;
 
-//
-// Witness for init() per Move 2024 conventions
-//
 public struct POOLS has drop {}
 
 //
@@ -31,10 +28,10 @@ public struct PoolRegistry has key {
     id: UID,
     // pool_id → Pool
     pools: table::Table<u64, Pool>,
-    // pool_id → vector<address>  (CHANGED from vector<UID>)
+    // pool_id → vector<address>
     pool_users: table::Table<u64, vector<address>>,
-    // user → vector<address>     (CHANGED from vector<UID>)
-    user_data: table::Table<address, vector<address>>,
+    // pool id → vector<vector<u8>>   
+    pool_data: table::Table<u64, vector<vector<u8>>>,
     // user → vector<u64>
     user_pools: table::Table<address, vector<u64>>,
     next_pool_id: u64,
@@ -58,7 +55,7 @@ fun init(_: POOLS, ctx: &mut TxContext) {
         id: object::new(ctx),
         pools: table::new(ctx),
         pool_users: table::new(ctx), // now stores vector<address>
-        user_data: table::new(ctx), // now stores vector<address>
+        pool_data: table::new(ctx), // now stores vector<vector<u8>>
         user_pools: table::new(ctx),
         next_pool_id: 1,
     };
@@ -145,9 +142,9 @@ public fun borrow_pool_users(registry: &PoolRegistry): &table::Table<u64, vector
     &registry.pool_users
 }
 
-public fun borrow_user_data(registry: &PoolRegistry): &table::Table<address, vector<address>> {
+public fun borrow_pool_data(registry: &PoolRegistry): &table::Table<u64, vector<vector<u8>>> {
     // CHANGED
-    &registry.user_data
+    &registry.pool_data
 }
 
 public fun borrow_user_pools(registry: &PoolRegistry): &table::Table<address, vector<u64>> {
@@ -165,11 +162,11 @@ public fun borrow_mut_pool_users(
     &mut registry.pool_users
 }
 
-public fun borrow_mut_user_data(
+public fun borrow_mut_pool_data(
     registry: &mut PoolRegistry,
-): &mut table::Table<address, vector<address>> {
+): &mut table::Table<u64, vector<vector<u8>>> {
     // CHANGED
-    &mut registry.user_data
+    &mut registry.pool_data
 }
 
 public fun borrow_mut_user_pools(

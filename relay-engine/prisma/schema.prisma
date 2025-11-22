@@ -1,0 +1,45 @@
+// Prisma Schema for CloakX Relay Engine
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Job model - represents ML training jobs
+model Job {
+  id                BigInt    @id @default(autoincrement())
+  creator           String    // Sui address
+  poolId            BigInt
+  price             BigInt
+  buyerPublicKey    String
+  status            JobStatus @default(PENDING)
+  epochs            BigInt
+  learningRate      BigInt
+  modelConfigBlobId String?   // Optional Walrus blob ID for model config
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("jobs")
+}
+
+// Cursor model - tracks event listener positions
+model Cursor {
+  id       String @id // Event type (e.g., "JobCreated")
+  txDigest String
+  eventSeq String
+
+  @@map("cursors")
+}
+
+// Job status enum
+enum JobStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
