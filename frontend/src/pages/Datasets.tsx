@@ -8,11 +8,39 @@ import { Link } from "react-router-dom";
 import { usePools } from "@/hooks/usePools";
 import { toast } from "sonner";
 
+// Schema definitions mapped by pool metadata
+const schemaMap: Record<string, {
+  name: string;
+  fields: string[];
+  oneLiner: string;
+}> = {
+  "Healthcare": {
+    name: "Healthcare Records",
+    fields: ["patient_id", "age", "diagnosis", "treatment", "outcome"],
+    oneLiner: "Anonymized patient health metrics and treatment outcomes"
+  },
+  "Finance": {
+    name: "Financial Transactions",
+    fields: ["transaction_id", "amount", "category", "timestamp", "merchant_type"],
+    oneLiner: "Encrypted banking transaction patterns and spending behavior"
+  },
+  "IoT": {
+    name: "IoT Sensor Data",
+    fields: ["device_id", "temperature", "humidity", "energy_usage", "timestamp"],
+    oneLiner: "Smart home device metrics and environmental data"
+  },
+  "Retail": {
+    name: "E-commerce Behavior",
+    fields: ["session_id", "product_views", "cart_additions", "purchase_value", "time_spent"],
+    oneLiner: "User shopping patterns and purchase preferences"
+  }
+};
+
 const mockDatasets = [
   {
     id: 1,
     name: "Healthcare Records",
-    description: "Anonymized patient health metrics and outcomes",
+    description: "Anonymized patient health metrics and treatment outcomes",
     contributors: 142,
     computePrice: "0.001 SUI",
     schema: ["patient_id", "age", "diagnosis", "treatment", "outcome"],
@@ -21,7 +49,7 @@ const mockDatasets = [
   {
     id: 2,
     name: "Financial Transactions",
-    description: "Encrypted banking transaction patterns",
+    description: "Encrypted banking transaction patterns and spending behavior",
     contributors: 89,
     computePrice: "0.001 SUI",
     schema: ["transaction_id", "amount", "category", "timestamp", "merchant_type"],
@@ -30,7 +58,7 @@ const mockDatasets = [
   {
     id: 3,
     name: "IoT Sensor Data",
-    description: "Smart home device metrics and patterns",
+    description: "Smart home device metrics and environmental data",
     contributors: 234,
     computePrice: "0.001 SUI",
     schema: ["device_id", "temperature", "humidity", "energy_usage", "timestamp"],
@@ -39,7 +67,7 @@ const mockDatasets = [
   {
     id: 4,
     name: "E-commerce Behavior",
-    description: "User shopping patterns and preferences",
+    description: "User shopping patterns and purchase preferences",
     contributors: 178,
     computePrice: "0.001 SUI",
     schema: ["session_id", "product_views", "cart_additions", "purchase_value", "time_spent"],
@@ -72,15 +100,19 @@ const Datasets = () => {
 
   // Use fetched pools if available, otherwise fall back to mock data
   const displayDatasets = pools.length > 0
-    ? pools.map(pool => ({
-        id: pool.poolId,
-        name: pool.metadata || `Pool ${pool.poolId}`,
-        description: `Data pool for ${pool.metadata}`,
-        contributors: pool.contributorCount,
-        computePrice: "0.001 SUI",
-        schema: [], // Schema info not available from pool
-        category: pool.metadata || "General"
-      }))
+    ? pools.map(pool => {
+        const category = pool.metadata || "Healthcare"; // Default to Healthcare if no metadata
+        const schemaData = schemaMap[category] || schemaMap["Healthcare"];
+        return {
+          id: pool.poolId,
+          name: schemaData.name,
+          description: schemaData.oneLiner,
+          contributors: pool.contributorCount,
+          computePrice: "0.001 SUI",
+          schema: schemaData.fields,
+          category: category
+        };
+      })
     : mockDatasets;
 
   return (
