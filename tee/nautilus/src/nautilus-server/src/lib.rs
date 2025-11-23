@@ -21,6 +21,10 @@ mod apps {
     #[cfg(feature = "seal-example")]
     #[path = "seal-example/mod.rs"]
     pub mod seal_example;
+
+    #[cfg(feature = "mltraining")]          // 
+    #[path = "mltraining/mod.rs"]           // 
+    pub mod mltraining;
 }
 
 pub mod app {
@@ -32,6 +36,9 @@ pub mod app {
 
     #[cfg(feature = "seal-example")]
     pub use crate::apps::seal_example::*;
+
+    #[cfg(feature = "mltraining")]
+    pub use crate::apps::mltraining::*;
 }
 
 pub mod common;
