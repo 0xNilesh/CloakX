@@ -73,8 +73,8 @@ COPY --from=user-socat /bin/socat . initramfs
 COPY --from=user-nit /bin/init initramfs
 RUN cp /src/nautilus-server/target/${TARGET}/release/nautilus-server initramfs
 RUN cp /src/nautilus-server/traffic_forwarder.py initramfs/
-RUN cp /src/nautilus-server/run.sh initramfs/
-
+RUN cp /src/nautilus-server/run.sh initramfs/ && \
+    chmod +x initramfs/run.sh
 COPY <<-EOF initramfs/etc/environment
 SSL_CERT_FILE=/ca-certificates.crt
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/
