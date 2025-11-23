@@ -8,56 +8,56 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Modern, clean palette with soft professional aesthetic */
-    --background: 220 14% 98%; /* Light gray (#F9FAFB) */
-    --foreground: 220 26% 14%; /* Dark gray/black (#111827) */
+    /* Black and white theme - white background with black/gray elements */
+    --background: 0 0% 100%; /* Pure white (#FFFFFF) */
+    --foreground: 0 0% 0%; /* Pure black (#000000) */
 
-    --card: 0 0% 100%; /* Pure white (#FFFFFF) */
-    --card-foreground: 220 26% 14%;
+    --card: 0 0% 98%; /* Very light gray (#FAFAFA) */
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 26% 14%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 221 83% 53%; /* Deep blue (#2563EB) */
+    --primary: 0 0% 10%; /* Very dark gray/black (#1A1A1A) */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%; /* Light background (#F9FAFB) */
-    --secondary-foreground: 220 26% 14%;
+    --secondary: 0 0% 95%; /* Light gray (#F2F2F2) */
+    --secondary-foreground: 0 0% 10%;
 
-    --muted: 220 13% 91%; /* Muted gray (#E5E7EB) */
-    --muted-foreground: 220 9% 46%; /* Medium gray (#6B7280) */
+    --muted: 0 0% 90%; /* Muted light gray (#E5E5E5) */
+    --muted-foreground: 0 0% 40%; /* Medium gray (#666666) */
 
-    --accent: 221 83% 53%; /* Blue accent */
+    --accent: 0 0% 20%; /* Dark gray accent (#333333) */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 0% 15%; /* Very dark gray for destructive (#262626) */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%; /* #E5E7EB */
-    --input: 220 14% 96%; /* #F9FAFB */
-    --ring: 221 83% 53%; /* Blue ring */
+    --border: 0 0% 85%; /* Light border gray (#D9D9D9) */
+    --input: 0 0% 96%; /* Very light input gray (#F5F5F5) */
+    --ring: 0 0% 30%; /* Medium dark ring gray (#4D4D4D) */
 
-    --success: 142 71% 45%; /* Green (#10B981) */
-    --warning: 25 95% 53%; /* Orange (#F97316) */
+    --success: 0 0% 25%; /* Dark gray for success (#404040) */
+    --warning: 0 0% 35%; /* Medium dark gray for warning (#595959) */
 
     --radius: 0.75rem; /* 12px - rounded corners */
 
-    /* Badge colors */
-    --badge-purple: 258 90% 66%; /* #8B5CF6 */
-    --badge-pink: 330 81% 60%; /* #EC4899 */
-    --badge-orange: 25 95% 53%; /* #F97316 */
-    --badge-green: 142 71% 45%; /* #10B981 */
-    --badge-blue-bg: 221 94% 95%; /* #DBEAFE */
-    --badge-blue-text: 221 83% 53%; /* #2563EB */
+    /* Badge colors - all shades of gray */
+    --badge-purple: 0 0% 20%; /* Dark gray (#333333) */
+    --badge-pink: 0 0% 30%; /* Medium dark gray (#4D4D4D) */
+    --badge-orange: 0 0% 25%; /* Dark gray (#404040) */
+    --badge-green: 0 0% 15%; /* Very dark gray (#262626) */
+    --badge-blue-bg: 0 0% 92%; /* Light gray background (#EBEBEB) */
+    --badge-blue-text: 0 0% 20%; /* Dark gray text (#333333) */
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 26% 14%;
-    --sidebar-primary: 221 83% 53%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 10%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 96%;
-    --sidebar-accent-foreground: 220 26% 14%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 85%;
+    --sidebar-ring: 0 0% 30%;
   }
 }
 

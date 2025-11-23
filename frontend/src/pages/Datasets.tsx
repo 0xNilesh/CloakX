@@ -101,16 +101,16 @@ const Datasets = () => {
           </div>
 
           {/* {pools.length > 0 && (
-            <div className="mt-4 p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
-              <p className="text-sm font-medium text-green-800 dark:text-green-200">
+            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg">
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
                 ✅ Found {pools.length} on-chain pools: {pools.map(p => `"${p.metadata}"`).join(", ")}
               </p>
             </div>
           )} */}
 
           {error && (
-            <div className="mt-4 p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm font-medium text-red-800 dark:text-red-200">
+            <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 ❌ Error: {error}
               </p>
             </div>
@@ -126,12 +126,12 @@ const Datasets = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayDatasets.map((dataset, index) => {
-            // Assign different pastel colors to dataset icons
+            // Assign different shades of gray to dataset icons
             const avatarColors = [
-              'bg-gradient-to-br from-purple-500 to-purple-600', // Healthcare
-              'bg-gradient-to-br from-blue-500 to-blue-600',     // Finance
-              'bg-gradient-to-br from-orange-500 to-orange-600', // IoT
-              'bg-gradient-to-br from-green-500 to-green-600',   // Retail
+              'bg-gradient-to-br from-gray-600 to-gray-700', // Healthcare
+              'bg-gradient-to-br from-gray-700 to-gray-800', // Finance
+              'bg-gradient-to-br from-gray-500 to-gray-600', // IoT
+              'bg-gradient-to-br from-gray-800 to-gray-900', // Retail
             ];
             const badgeVariants: ("purple" | "default" | "orange" | "green")[] = ['purple', 'default', 'orange', 'green'];
 

@@ -628,9 +628,9 @@ const Compute = () => {
 
                     {/* Upload Success - Detailed View */}
                     {uploadResult && (
-                      <Card className="border-green-500/50 bg-green-50/5">
+                      <Card className="border-gray-700/50 bg-gray-50/5">
                         <div className="p-4 space-y-4">
-                          <div className="flex items-center gap-2 text-green-600">
+                          <div className="flex items-center gap-2 text-gray-900">
                             <CheckCircle className="h-5 w-5" />
                             <h3 className="font-semibold">Upload Successful</h3>
                           </div>
@@ -942,9 +942,9 @@ const Compute = () => {
               <div className="space-y-6">
                 {/* Job Creation Success */}
                 {jobResult && (
-                  <Card className="border-green-500/50 bg-green-50/5">
+                  <Card className="border-gray-700/50 bg-gray-50/5">
                     <div className="p-6 space-y-4">
-                      <div className="flex items-center gap-2 text-green-600">
+                      <div className="flex items-center gap-2 text-gray-900">
                         <CheckCircle className="h-5 w-5" />
                         <h3 className="font-semibold">
                           Job Created Successfully!
@@ -1048,8 +1048,8 @@ const Compute = () => {
                 {/* Post-Completion Expectations */}
                 <div className="border border-border rounded-lg p-6 space-y-5 bg-card">
                   <div className="flex items-center gap-3 pb-3 border-b border-border">
-                    <div className="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-10 h-10 bg-gray-800/10 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
@@ -1128,23 +1128,23 @@ const Compute = () => {
                       </h4>
                       <div className="pl-6 space-y-1.5 text-xs text-muted-foreground">
                         <div className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span className="text-gray-900 mt-0.5">✓</span>
                           <span><strong className="text-foreground">Model Weights File:</strong> Trained neural network parameters in standard format (e.g., .h5, .pth, .pb)</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span className="text-gray-900 mt-0.5">✓</span>
                           <span><strong className="text-foreground">Training Report:</strong> JSON file with epoch-by-epoch loss and accuracy metrics</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span className="text-gray-900 mt-0.5">✓</span>
                           <span><strong className="text-foreground">Performance Summary:</strong> Final validation scores and model statistics</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span className="text-gray-900 mt-0.5">✓</span>
                           <span><strong className="text-foreground">Training Configuration:</strong> Hyperparameters used during training for reproducibility</span>
                         </div>
                         <div className="flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span className="text-gray-900 mt-0.5">✓</span>
                           <span><strong className="text-foreground">Convergence Plots:</strong> Visual charts showing training progress (if applicable)</span>
                         </div>
                       </div>

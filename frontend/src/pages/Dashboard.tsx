@@ -183,13 +183,13 @@ const Dashboard = () => {
                 {/* Stats Cards */}
                 <div className="grid md:grid-cols-3 gap-6">
                   <Card className="p-6 border border-border overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-800/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                     <div className="relative">
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-800/20">
                           <TrendingUp className="w-6 h-6 text-white" />
                         </div>
-                        <ArrowUpRight className="w-5 h-5 text-green-600" />
+                        <ArrowUpRight className="w-5 h-5 text-gray-900" />
                       </div>
                       <div>
                         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
@@ -210,10 +210,10 @@ const Dashboard = () => {
                   </Card>
 
                   <Card className="p-6 border border-border overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-700/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                     <div className="relative">
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center shadow-lg shadow-gray-700/20">
                           <Database className="w-6 h-6 text-white" />
                         </div>
                       </div>
@@ -229,10 +229,10 @@ const Dashboard = () => {
                   </Card>
 
                   <Card className="p-6 border border-border overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-600/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                     <div className="relative">
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg shadow-gray-600/20">
                           <Zap className="w-6 h-6 text-white" />
                         </div>
                       </div>
@@ -300,7 +300,7 @@ const Dashboard = () => {
                           <div className="bg-secondary/30 px-6 py-4 border-b border-border">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                                <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center shadow-sm">
                                   <Database className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
@@ -316,19 +316,19 @@ const Dashboard = () => {
                               {/* Stats Summary */}
                               <div className="flex items-center gap-6">
                                 <div className="flex items-center gap-2">
-                                  <div className="text-center px-3 py-1 rounded-lg bg-green-500/10">
-                                    <p className="text-lg font-bold text-green-600">
+                                  <div className="text-center px-3 py-1 rounded-lg bg-gray-800/10">
+                                    <p className="text-lg font-bold text-gray-900">
                                       {poolStat.completedJobs}
                                     </p>
-                                    <p className="text-[10px] text-green-600/80 uppercase tracking-wide">
+                                    <p className="text-[10px] text-gray-900/80 uppercase tracking-wide">
                                       Completed
                                     </p>
                                   </div>
-                                  <div className="text-center px-3 py-1 rounded-lg bg-orange-500/10">
-                                    <p className="text-lg font-bold text-orange-600">
+                                  <div className="text-center px-3 py-1 rounded-lg bg-gray-600/10">
+                                    <p className="text-lg font-bold text-gray-700">
                                       {poolStat.pendingJobs}
                                     </p>
-                                    <p className="text-[10px] text-orange-600/80 uppercase tracking-wide">
+                                    <p className="text-[10px] text-gray-700/80 uppercase tracking-wide">
                                       Pending
                                     </p>
                                   </div>
@@ -367,7 +367,7 @@ const Dashboard = () => {
                                     className="group"
                                   >
                                     <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-secondary/50 hover:border-primary/50 transition-all duration-200">
-                                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0">
+                                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center shadow-sm flex-shrink-0">
                                         <Database className="w-5 h-5 text-white" />
                                       </div>
                                       <div className="flex-1 min-w-0">
@@ -420,10 +420,10 @@ const Dashboard = () => {
                 {/* Stats Cards */}
                 <div className="grid md:grid-cols-3 gap-6">
                   <Card className="p-6 border border-border overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-500/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                     <div className="relative">
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl flex items-center justify-center shadow-lg shadow-gray-500/20">
                           <TrendingUp className="w-6 h-6 text-white" />
                         </div>
                       </div>
@@ -444,10 +444,10 @@ const Dashboard = () => {
                   </Card>
 
                   <Card className="p-6 border border-border overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-600/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                     <div className="relative">
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg shadow-gray-600/20">
                           <Zap className="w-6 h-6 text-white" />
                         </div>
                       </div>
@@ -463,10 +463,10 @@ const Dashboard = () => {
                   </Card>
 
                   <Card className="p-6 border border-border overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-700/10 to-transparent rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
                     <div className="relative">
                       <div className="flex items-center justify-between mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center shadow-lg shadow-gray-700/20">
                           <Database className="w-6 h-6 text-white" />
                         </div>
                       </div>
@@ -533,13 +533,13 @@ const Dashboard = () => {
                           const statusBadge = getStatusBadge(job.status);
                           const statusIcons = {
                             [JobStatus.Completed]: (
-                              <CheckCircle2 className="w-4 h-4 text-green-600" />
+                              <CheckCircle2 className="w-4 h-4 text-gray-900" />
                             ),
                             [JobStatus.Pending]: (
-                              <Clock className="w-4 h-4 text-orange-600" />
+                              <Clock className="w-4 h-4 text-gray-700" />
                             ),
                             [JobStatus.Cancelled]: (
-                              <XCircle className="w-4 h-4 text-red-600" />
+                              <XCircle className="w-4 h-4 text-gray-800" />
                             ),
                           };
 
@@ -554,7 +554,7 @@ const Dashboard = () => {
                               <div className="h-full p-4 rounded-lg border border-border bg-card hover:bg-secondary/50 hover:border-primary/50 transition-all duration-200">
                                 {/* Header with icon and status */}
                                 <div className="flex items-start justify-between mb-3">
-                                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
                                     <Zap className="w-5 h-5 text-white" />
                                   </div>
                                   <div className="flex items-center gap-1.5">

@@ -279,9 +279,9 @@ export const CSVUploader = ({ poolId = DEFAULT_POOL_ID }: CSVUploaderProps) => {
 
       {/* Upload Result */}
       {result && (
-        <Card className="border-green-500/50 bg-green-50/5">
+        <Card className="border-gray-700/50 bg-gray-50/5">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-600">
+            <CardTitle className="flex items-center gap-2 text-gray-900">
               <CheckCircle className="w-5 h-5" />
               Upload Successful
             </CardTitle>
@@ -369,7 +369,7 @@ export const CSVUploader = ({ poolId = DEFAULT_POOL_ID }: CSVUploaderProps) => {
             {result.transactionDigest && (
               <>
                 <div className="pt-4 border-t">
-                  <p className="text-sm font-semibold mb-3 text-green-600">
+                  <p className="text-sm font-semibold mb-3 text-gray-900">
                     ✅ On-chain Registration Successful
                   </p>
 
