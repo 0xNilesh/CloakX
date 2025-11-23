@@ -7,11 +7,11 @@ export const Navbar = () => {
     <nav className="border-b border-border bg-card/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center group-hover:shadow-md group-hover:scale-105 transition-all duration-200">
-              <Database className="w-5 h-5 text-primary-foreground" />
+          <Link to="/" className="flex items-center group">
+            <div className="rounded-xl flex items-center justify-center transition-all duration-200">
+              <img src="/logo.png" alt="CloakX Logo" className="w-24 h-20" />
             </div>
-            <span className="text-xl font-bold tracking-tight">
+            <span className="text-xl font-bold tracking-tight ml-[-1rem]">
               CloakX
             </span>
           </Link>
