@@ -51,7 +51,7 @@ pub async fn process_data(
 
     // === Upload your real model.pkl to Walrus ===
     let publisher = std::env::var("WALRUS_PUBLISHER")
-        .unwrap_or("https://publisher-testnet.walrus.space".into());
+        .unwrap_or("https://publisher.walrus-testnet.walrus.space".into());
 
     let upload_resp: serde_json::Value = reqwest::Client::new()
         .put(format!("{publisher}/v1/store"))
