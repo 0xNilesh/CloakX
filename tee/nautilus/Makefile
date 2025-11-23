@@ -21,8 +21,8 @@ out/nitro.eif: $(shell git ls-files src) | out
 run: out/nitro.eif
 	sudo nitro-cli \
 		run-enclave \
-		--cpu-count 2 \
-		--memory 2048M \
+	        --cpu-count 2 \
+		--memory 2000M \
 		--eif-path out/nitro.eif
 
 .PHONY: run-debug
@@ -30,7 +30,7 @@ run-debug: out/nitro.eif
 	sudo nitro-cli \
 		run-enclave \
 		--cpu-count 2 \
-		--memory 2048M \
+		--memory 2000M \
 		--eif-path out/nitro.eif \
 		--debug-mode \
 		--attach-console
