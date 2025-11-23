@@ -25,6 +25,7 @@ export enum JobStatus {
  */
 export interface JobData {
   jobId: number;
+  objectId?: string; // Sui object ID for explorer links
   creator: string;
   poolId: number;
   modelWid: string; // Walrus blob ID (decoded from bytes)
@@ -108,8 +109,19 @@ export async function getJobById(jobId: number): Promise<JobData | null> {
 
     const jobFields = content.fields?.value?.fields || content.fields;
 
+    // Use the Dynamic Field's object ID for explorer links
+    // This is the actual on-chain object that persists in the Sui network
+    // The Job struct's internal id field (jobFields.id.id) is NOT the same as the on-chain object ID
+    const explorerObjectId = jobField.data.objectId;
+
+    console.log(`\n🔍 Job ${jobId} - Object ID Analysis:`);
+    console.log(`  Dynamic Field ID (on-chain): ${explorerObjectId}`);
+    console.log(`  Job struct internal ID: ${jobFields.id?.id}`);
+    console.log(`  ✅ Using Dynamic Field ID for explorer link: ${explorerObjectId}\n`);
+
     const jobData: JobData = {
       jobId,
+      objectId: explorerObjectId, // Use the dynamic field's object ID for explorer links
       creator: jobFields.creator,
       poolId: parseInt(jobFields.pool_id, 10),
       modelWid: bytesToString(jobFields.model_wid || []),

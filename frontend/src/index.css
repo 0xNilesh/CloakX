@@ -8,48 +8,56 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Modern security-centric palette */
-    --background: 0 0% 100%;
-    --foreground: 210 40% 12%;
+    /* Modern, clean palette with soft professional aesthetic */
+    --background: 220 14% 98%; /* Light gray (#F9FAFB) */
+    --foreground: 220 26% 14%; /* Dark gray/black (#111827) */
 
-    --card: 210 10% 97%;
-    --card-foreground: 210 40% 12%;
+    --card: 0 0% 100%; /* Pure white (#FFFFFF) */
+    --card-foreground: 220 26% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 40% 12%;
+    --popover-foreground: 220 26% 14%;
 
-    --primary: 210 40% 12%;
+    --primary: 221 83% 53%; /* Deep blue (#2563EB) */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 10% 92%;
-    --secondary-foreground: 210 40% 12%;
+    --secondary: 220 14% 96%; /* Light background (#F9FAFB) */
+    --secondary-foreground: 220 26% 14%;
 
-    --muted: 210 8% 88%;
-    --muted-foreground: 210 10% 45%;
+    --muted: 220 13% 91%; /* Muted gray (#E5E7EB) */
+    --muted-foreground: 220 9% 46%; /* Medium gray (#6B7280) */
 
-    --accent: 210 40% 12%;
+    --accent: 221 83% 53%; /* Blue accent */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 10% 90%;
-    --input: 210 8% 92%;
-    --ring: 210 40% 12%;
+    --border: 220 13% 91%; /* #E5E7EB */
+    --input: 220 14% 96%; /* #F9FAFB */
+    --ring: 221 83% 53%; /* Blue ring */
 
-    --success: 0 0% 9%;
-    --warning: 0 0% 9%;
+    --success: 142 71% 45%; /* Green (#10B981) */
+    --warning: 25 95% 53%; /* Orange (#F97316) */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* 12px - rounded corners */
 
-    --sidebar-background: 210 10% 97%;
-    --sidebar-foreground: 210 40% 12%;
-    --sidebar-primary: 210 40% 12%;
+    /* Badge colors */
+    --badge-purple: 258 90% 66%; /* #8B5CF6 */
+    --badge-pink: 330 81% 60%; /* #EC4899 */
+    --badge-orange: 25 95% 53%; /* #F97316 */
+    --badge-green: 142 71% 45%; /* #10B981 */
+    --badge-blue-bg: 221 94% 95%; /* #DBEAFE */
+    --badge-blue-text: 221 83% 53%; /* #2563EB */
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 26% 14%;
+    --sidebar-primary: 221 83% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 10% 92%;
-    --sidebar-accent-foreground: 210 40% 12%;
-    --sidebar-border: 210 10% 90%;
-    --sidebar-ring: 210 40% 12%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 26% 14%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 221 83% 53%;
   }
 }
 
@@ -60,7 +68,83 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro", "Segoe UI", system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Modern card with shadow */
+  .card-modern {
+    @apply bg-card rounded-xl shadow-sm border border-border transition-all duration-200;
+  }
+
+  .card-modern:hover {
+    @apply shadow-md;
+  }
+
+  /* Primary button with modern styling */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium shadow-sm;
+    @apply hover:shadow-md hover:scale-[1.02] transition-all duration-200;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply bg-card text-foreground border border-border px-6 py-3 rounded-lg font-medium;
+    @apply hover:bg-secondary transition-all duration-200;
+  }
+
+  /* Badge styles */
+  .badge-pill {
+    @apply px-3 py-1.5 rounded-full text-xs font-medium inline-flex items-center gap-1;
+  }
+
+  .badge-blue {
+    background-color: hsl(var(--badge-blue-bg));
+    color: hsl(var(--badge-blue-text));
+  }
+
+  .badge-purple {
+    background-color: hsl(258 90% 95%);
+    color: hsl(var(--badge-purple));
+  }
+
+  .badge-pink {
+    background-color: hsl(330 81% 95%);
+    color: hsl(var(--badge-pink));
+  }
+
+  .badge-orange {
+    background-color: hsl(25 95% 95%);
+    color: hsl(var(--badge-orange));
+  }
+
+  .badge-green {
+    background-color: hsl(142 71% 95%);
+    color: hsl(var(--badge-green));
+  }
+
+  /* Avatar badge */
+  .avatar-badge {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center text-white font-semibold text-lg;
+  }
+
+  /* Input/code block styling */
+  .input-modern {
+    @apply bg-input border border-border rounded-lg px-4 py-3 text-sm;
+    @apply focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200;
+  }
+
+  /* Code block */
+  .code-block {
+    @apply bg-secondary border border-border rounded-lg p-4 font-mono text-xs;
   }
 }
 

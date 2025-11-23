@@ -87,27 +87,17 @@ const Datasets = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="container mx-auto px-6 py-16">
-        <div className="max-w-3xl mb-12">
-          <div className="flex items-start justify-between mb-4">
+      <div className="container mx-auto px-6 py-20">
+        <div className="max-w-4xl mb-16">
+          <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
                 Available Datasets
               </h1>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl">
                 Contribute your data securely or request computations on datasets. All data remains encrypted and private throughout the process.
               </p>
             </div>
-            <Button
-              onClick={handleFetchPools}
-              disabled={loading}
-              variant="outline"
-              size="sm"
-              className="ml-4 gap-2"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Fetch Pools
-            </Button>
           </div>
 
           {/* {pools.length > 0 && (
@@ -134,34 +124,45 @@ const Datasets = () => {
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {displayDatasets.map((dataset) => (
-            <Card key={dataset.id} className="p-8 border border-border hover:border-primary/50 transition-colors">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center flex-shrink-0">
-                  <Database className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold tracking-tight mb-2">{dataset.name}</h3>
-                  <Badge variant="secondary" className="text-xs font-medium">
-                    {dataset.category}
-                  </Badge>
-                </div>
-              </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayDatasets.map((dataset, index) => {
+            // Assign different pastel colors to dataset icons
+            const avatarColors = [
+              'bg-gradient-to-br from-purple-500 to-purple-600', // Healthcare
+              'bg-gradient-to-br from-blue-500 to-blue-600',     // Finance
+              'bg-gradient-to-br from-orange-500 to-orange-600', // IoT
+              'bg-gradient-to-br from-green-500 to-green-600',   // Retail
+            ];
+            const badgeVariants: ("purple" | "default" | "orange" | "green")[] = ['purple', 'default', 'orange', 'green'];
 
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                {dataset.description}
-              </p>
+            return (
+            <Card key={dataset.id} className="p-0 border border-border overflow-hidden">
+              <div className="p-8">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className={`w-12 h-12 ${avatarColors[index % 4]} rounded-xl flex items-center justify-center flex-shrink-0 text-white font-semibold text-lg shadow-sm`}>
+                    <Database className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold tracking-tight mb-2 leading-tight">{dataset.name}</h3>
+                    <Badge variant={badgeVariants[index % 4]} className="text-xs">
+                      {dataset.category}
+                    </Badge>
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  {dataset.description}
+                </p>
 
               {dataset.schema.length > 0 && (
                 <div className="space-y-3 mb-6 pb-6 border-b border-border">
                   <div className="flex items-center gap-2">
                     <Eye className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">Data Schema</span>
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Data Schema</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {dataset.schema.map((field) => (
-                      <Badge key={field} variant="outline" className="text-xs">
+                      <Badge key={field} variant="outline" className="text-xs font-normal">
                         {field}
                       </Badge>
                     ))}
@@ -169,14 +170,15 @@ const Datasets = () => {
                 </div>
               )}
 
-              <div className="flex items-center justify-between text-sm mb-6 pb-6 border-b border-border">
-                <div>
-                  <span className="text-muted-foreground">
+              <div className="flex items-center justify-between text-xs mb-6 pb-6 border-b border-border">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <Database className="w-3.5 h-3.5" />
+                  <span className="font-medium text-foreground">
                     {dataset.contributors > 0 ? dataset.contributors : "0"}
                   </span>
-                  <span className="text-muted-foreground ml-1">contributors</span>
+                  <span>contributors</span>
                 </div>
-                <div className="font-semibold">{dataset.computePrice}</div>
+                <div className="font-semibold text-foreground">{dataset.computePrice}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -193,8 +195,9 @@ const Datasets = () => {
                   </Link>
                 </Button>
               </div>
+              </div>
             </Card>
-          ))}
+          )})}
         </div>
       </div>
     </div>

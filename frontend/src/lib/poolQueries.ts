@@ -11,6 +11,7 @@ import { POOL_REGISTRY_ID, POOLS_TABLE_ID, POOL_USERS_TABLE_ID } from "./contrac
  */
 export interface PoolData {
   poolId: number;
+  objectId?: string; // Sui object ID for explorer links
   metadata: string; // Decoded from bytes
   metadataBytes: number[]; // Raw bytes
   active: boolean;
@@ -188,6 +189,7 @@ export async function getAllPools(): Promise<PoolData[]> {
 
           const poolData: PoolData = {
             poolId,
+            objectId: field.objectId, // Store the object ID for explorer links
             metadata,
             metadataBytes,
             active,

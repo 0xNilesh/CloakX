@@ -4,14 +4,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+        default: "bg-[hsl(var(--badge-blue-bg))] text-[hsl(var(--badge-blue-text))] border-0",
+        secondary: "bg-secondary text-secondary-foreground border-0",
+        destructive: "bg-destructive/10 text-destructive border-0",
+        outline: "border border-border text-foreground bg-card",
+        purple: "bg-[hsl(258,90%,95%)] text-[hsl(var(--badge-purple))] border-0",
+        pink: "bg-[hsl(330,81%,95%)] text-[hsl(var(--badge-pink))] border-0",
+        orange: "bg-[hsl(25,95%,95%)] text-[hsl(var(--badge-orange))] border-0",
+        green: "bg-[hsl(142,71%,95%)] text-[hsl(var(--badge-green))] border-0",
       },
     },
     defaultVariants: {

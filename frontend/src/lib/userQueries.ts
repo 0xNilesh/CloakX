@@ -10,6 +10,7 @@ import {
   POOL_DATA_TABLE_ID,
   PAYOUTS_TABLE_ID,
   JOBS_TABLE_ID,
+  PACKAGE_ID,
 } from "./contractConstants";
 import { getPoolById, PoolData } from "./poolQueries";
 import { JobData, JobStatus, getJobById } from "./jobQueries";
@@ -308,6 +309,68 @@ export async function getComputationsOnUserData(
 }
 
 /**
+ * UserData object structure
+ */
+export interface UserDataObject {
+  objectId: string;
+  poolId: number;
+  dataWid: string; // Walrus blob ID
+  userAddress: string;
+}
+
+/**
+ * Get UserData objects owned by a user
+ */
+export async function getUserDataObjects(
+  userAddress: string
+): Promise<UserDataObject[]> {
+  console.log(
+    `\n📦 Fetching UserData objects for: ${userAddress.substring(0, 10)}...`
+  );
+
+  try {
+    const structType = `${PACKAGE_ID}::user_data::UserData`;
+    console.log(`  Querying for struct type: ${structType}`);
+
+    const objects = await suiClient.getOwnedObjects({
+      owner: userAddress,
+      filter: {
+        StructType: structType,
+      },
+      options: {
+        showContent: true,
+        showType: true,
+      },
+    });
+
+    console.log(`  Found ${objects.data.length} owned objects`);
+
+    const userDataObjects: UserDataObject[] = [];
+
+    for (const obj of objects.data) {
+      if (obj.data?.content && obj.data.content.dataType === "moveObject") {
+        const fields = (obj.data.content as any).fields;
+        console.log(`  Processing UserData object ${obj.data.objectId}:`, fields);
+
+        userDataObjects.push({
+          objectId: obj.data.objectId,
+          poolId: parseInt(fields.pool_id, 10),
+          dataWid: fields.data_wid ? String.fromCharCode(...fields.data_wid) : "",
+          userAddress: fields.user,
+        });
+      }
+    }
+
+    console.log(`✅ Found ${userDataObjects.length} UserData objects`);
+    return userDataObjects;
+  } catch (error: any) {
+    console.error(`❌ Error fetching UserData objects:`, error);
+    console.error(`   Error message:`, error.message);
+    return [];
+  }
+}
+
+/**
  * Get detailed breakdown of computations per pool for a contributor
  */
 export interface PoolComputationStats {
@@ -316,6 +379,7 @@ export interface PoolComputationStats {
   totalJobs: number;
   pendingJobs: number;
   completedJobs: number;
+  userDataObjects?: UserDataObject[]; // User's contributed data objects for this pool
 }
 
 export async function getComputationsPerPool(
@@ -329,6 +393,7 @@ export async function getComputationsPerPool(
   );
 
   const userPoolIds = await getUserContributionHistory(userAddress);
+  const userDataObjects = await getUserDataObjects(userAddress);
   const stats: PoolComputationStats[] = [];
 
   for (const poolId of userPoolIds) {
@@ -369,12 +434,16 @@ export async function getComputationsPerPool(
       console.error(`Error counting jobs for pool ${poolId}:`, error);
     }
 
+    // Filter UserData objects for this pool
+    const poolUserData = userDataObjects.filter(ud => ud.poolId === poolId);
+
     stats.push({
       poolId,
       poolMetadata: pool.metadata,
       totalJobs,
       pendingJobs,
       completedJobs,
+      userDataObjects: poolUserData,
     });
   }
 

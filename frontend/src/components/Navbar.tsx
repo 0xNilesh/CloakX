@@ -4,23 +4,23 @@ import { WalletConnect } from "./WalletConnect";
 
 export const Navbar = () => {
   return (
-    <nav className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto px-6 py-3">
+    <nav className="border-b border-border bg-card/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+      <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center group-hover:shadow-md transition-shadow">
-              <Database className="w-4.5 h-4.5 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center group-hover:shadow-md group-hover:scale-105 transition-all duration-200">
+              <Database className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-lg font-semibold tracking-tight">
+            <span className="text-xl font-bold tracking-tight">
               CloakX
             </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/datasets" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/datasets" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
               Datasets
             </Link>
-            <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
               Dashboard
             </Link>
           </div>
