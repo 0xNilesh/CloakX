@@ -1,5 +1,5 @@
 // src/apps/ml_training/mod.rs
-// HAPPY-PATH DEMO + REAL model.pkl + RANDOM ACCURACY 75–80%
+
 
 use crate::common::{IntentMessage, to_signed_response, IntentScope, ProcessDataRequest, ProcessedDataResponse};
 use crate::AppState;
