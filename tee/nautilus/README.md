@@ -42,6 +42,50 @@ All compute happens inside the Nautilus TEE, and all outputs include cryptograph
 
 ---
 
+## Project Structure
+```text
+nautilus/
+├── Containerfile
+├── Design.md
+├── Makefile
+├── README.md
+├── UsingNautilus.md
+├── configure_enclave.sh
+├── deny.toml
+├── expose_enclave.sh
+├── nuke.sh
+├── out
+│   ├── nitro.eif
+│   ├── nitro.pcrs
+│   └── rootfs.cpio
+├── register_enclave.sh
+├── reset_enclave.sh
+├── rust-toolchain.toml
+├── scripts
+│   ├── changed-files.sh
+│   └── license_check.sh
+├── secrets.json
+├── src
+│   └── nautilus-server
+│       ├── Cargo.lock
+│       ├── Cargo.toml
+│       ├── run.sh
+│       ├── src
+│       │   ├── apps
+│       │   │   └── mltraining
+│       │   │       ├── allowed_endpoints.yaml
+│       │   │       ├── assets
+│       │   │       │   └── model.pkl
+│       │   │       └── mod.rs
+│       │   ├── common.rs
+│       │   ├── lib.rs
+│       │   └── main.rs
+│       └── traffic_forwarder.py
+├── update.sh
+
+```
+
+
 ## Architecture
 
 ![alt text](Untitled.jpg)
@@ -128,6 +172,15 @@ curl -X POST http://13.217.109.6:3000/process_data \
     },
     "signature":"8d6fad2ab815e3832e9dad40e0768448022283f4917402ba243c89bc7da669d404283e077f59140aa28c3226d5a351d17bcc05bf0b676dad9c5b60335022b109"}
 ```
+## How to setup
+Clone repository in your AWS enabled EC2 instance 
+```shell
+cd CloakX/tee/nautilus/
+make run ENCLAVE_APP=mltraining # this builds the enclave
+# Open another shell of same instance
+sh expose_enclave.sh # this exposes port 3000 to the Internet for traffic
+```
+
 
 ## Enclave Running on AWS EC2
 
@@ -136,3 +189,6 @@ Below is a live screenshot from the EC2 instance confirming that the **Nautilus 
 ![alt text](Untitled-1.jpg)
 ![alt text](image.png)
 
+## Limitation & Future Scope
+- Right now simple model training is supported like simple neural network and classical ML Algorithim 
+- Future we aim to support decentralise training of LLM where data is contributed by people and training and Inference happen securely
