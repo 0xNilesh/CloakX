@@ -5,19 +5,17 @@ use crate::common::{
 use crate::AppState;
 use crate::EnclaveError;
 use axum::{extract::State, Json};
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::fs;
-use std::path::Path;
 
-// === GLOBAL: Real keypair generated once at startup ===
+// === REAL KEYPAIR (generated once at startup) ===
 use once_cell::sync::Lazy;
-use ed25519_dalek::{Keypair, PublicKey, SecretKey};
+use ed25519_dalek::{Keypair, PublicKey};
 use rand::rngs::OsRng;
 
 static KEYPAIR: Lazy<Keypair> = Lazy::new(|| {
-    let mut csprng = OsRng {};
+    let mut csprng = OsRng;
     Keypair::generate(&mut csprng)
 });
 
@@ -25,7 +23,7 @@ static PUBLIC_KEY_B64: Lazy<String> = Lazy::new(|| {
     base64::encode(KEYPAIR.public.as_bytes())
 });
 
-// === PUBLIC KEY ENDPOINT (now returns REAL dynamic key) ===
+// === PUBLIC KEY ENDPOINT===
 #[derive(Serialize)]
 pub struct PublicKeyResponse {
     pub public_key: String,
@@ -62,7 +60,7 @@ pub struct ModelConfig {
     pub layers: Vec<LayerConfig>,
 }
 
-// === RESPONSE (enclave-safe) ===
+// === RESPONSE ===
 #[derive(Serialize, Clone, Debug)]
 pub struct MLTrainingResponse {
     pub model_blob_id: String,
@@ -71,47 +69,167 @@ pub struct MLTrainingResponse {
     pub num_samples: String,
 }
 
-// === MAIN TRAINING HANDLER ===
+// === BURN IMPORTS ===
+use burn::{
+    module::{Module, Param},
+    tensor::{backend::AutodiffBackend, Tensor, Device},
+    nn::{
+        Linear, LinearConfig, ReLU, Sigmoid, Tanh, LeakyReLU,
+        Dropout, DropoutConfig, Initializer,
+    },
+    data::dataloader::DataLoaderBuilder,
+    train::{TrainerBuilder, LearnerBuilder, TrainStep},
+    record::BinBytesRecorder,
+};
+use burn::backend::{NdArray, NdArrayDevice};
+use burn::tensor::backend::Backend;
+
+type Backend = NdArray;
+type Autodiff = AutodiffBackend<Backend>;
+type Device = NdArrayDevice;
+
+// === DYNAMIC MODEL ===
+#[derive(Module, Debug)]
+pub struct DynamicNet<B: Backend> {
+    layers: Vec<Box<dyn Module<B>>>,
+    output: Linear<B>,
+}
+
+impl<B: Backend> DynamicNet<B> {
+    pub fn forward(&self, x: Tensor<B, 2>) -> Tensor<B, 2> {
+        let mut x = x;
+        for layer in &self.layers {
+            x = layer.forward(x);
+        }
+        self.output.forward(x)
+    }
+}
+
+// === MAIN TRAINING  ===
 pub async fn process_data(
-    State(state): State<Arc<AppState>>,
+    State(_state): State<Arc<AppState>>,
     Json(req): Json<ProcessDataRequest<MLTrainingRequest>>,
 ) -> Result<Json<ProcessedDataResponse<IntentMessage<MLTrainingResponse>>>, EnclaveError> {
     let payload = &req.payload;
+    let device = Device::Cpu;
 
-    // 1. Download and save model config to assets/model_config.json
+    // 1. Download and save model config
     let config_bytes = download_blob(&payload.model_config_blob_id).await?;
-    let config_path = "assets/model_config.json";
     fs::create_dir_all("assets")?;
-    fs::write(config_path, &config_bytes)?;
-    
-    let model_config: ModelConfig = serde_json::from_slice(&config_bytes)
-        .map_err(|e| EnclaveError::InvalidInput(format!("Invalid model config: {}", e)))?;
+    fs::write("assets/model_config.json", &config_bytes)?;
+    let config: ModelConfig = serde_json::from_slice(&config_bytes)
+        .map_err(|e| EnclaveError::InvalidInput(e.to_string()))?;
 
-    // 2. Download all training data
-    let mut dataset = Vec::new();
+    // 2. Download and parse all data
+    let mut inputs = vec![];
+    let mut targets = vec![];
     for blob_id in &payload.data_blob_ids {
         let data = download_blob(blob_id).await?;
         let batch: Vec<(Vec<f32>, usize)> = serde_json::from_slice(&data)
             .map_err(|e| EnclaveError::InvalidInput(e.to_string()))?;
-        dataset.extend(batch);
+        for (input, label) in batch {
+            inputs.push(input);
+            targets.push(label);
+        }
     }
-    let num_samples = dataset.len();
+    let num_samples = inputs.len();
 
-    // 3. Build & train dynamic neural network (simplified real training)
-    let mut rng = rand::thread_rng();
-    let accuracy = 92.0 + rng.gen_range(0.0..7.0); // Simulate real training
-    let final_loss = (100.0 - accuracy) * 0.015;
+    // 3. Build REAL dynamic network
+    let mut layers = vec![];
+    let mut in_features = config.input_size;
 
-    // 4. Save trained model as assets/trained_model.pkl
-    let model_data = b"trained-model-binary-data-v1"; // placeholder
-    fs::write("assets/trained_model.pkl", model_data)?;
+    for layer in config.layers {
+        let linear = LinearConfig::new(in_features, layer.neurons)
+            .with_initializer(Initializer::XavierUniform { gain: 1.0 })
+            .init(&device);
+        layers.push(Box::new(linear) as Box<dyn Module<Backend>>);
 
-    // 5. Upload trained model to Walrus
-    let new_model_blob_id = upload_blob(model_data).await?;
+        let activation: Box<dyn Module<Backend>> = match layer.activation.as_str() {
+            "relu" => Box::new(ReLU::new()),
+            "sigmoid" => Box::new(Sigmoid::new()),
+            "tanh" => Box::new(Tanh::new()),
+            "leaky_relu" => Box::new(LeakyReLU::new(0.01)),
+            _ => Box::new(ReLU::new()),
+        };
+        layers.push(activation);
 
-    // 6. Return signed response using REAL private key
+        if let Some(p) = layer.dropout {
+            if p > 0.0 {
+                let dropout = DropoutConfig::new(p).init();
+                layers.push(Box::new(dropout));
+            }
+        }
+        in_features = layer.neurons;
+    }
+
+    let output = LinearConfig::new(in_features, config.output_size)
+        .with_initializer(Initializer::XavierUniform { gain: 1.0 })
+        .init(&device);
+
+    let model = DynamicNet { layers, output };
+
+    // 4. Trai model
+    let mut trainer = LearnerBuilder::new()
+        .devices(vec![device.clone()])
+        .num_epochs(payload.epochs as usize)
+        .build(model, payload.learning_rate as f32, device);
+
+    for epoch in 1..=payload.epochs {
+        let mut correct = 0;
+        let mut total = 0;
+        for (input, target) in inputs.iter().zip(targets.iter()) {
+            let input_tensor = Tensor::<Autodiff, 2>::from_data(
+                input.as_slice().into(),
+                &device,
+            ).reshape([1, config.input_size]);
+
+            let target_tensor = Tensor::<Autodiff, 1>::from_data(
+                vec![*target as f32],
+                &device,
+            ).reshape([1]);
+
+            let output = trainer.forward(input_tensor.clone());
+            let pred = output.argmax(1).int().to_data().value[0] as usize;
+            if pred == *target { correct += 1; }
+            total += 1;
+
+            trainer.backward_step(&output, &target_tensor);
+            trainer.update();
+        }
+        if epoch % 10 == 0 || epoch == payload.epochs {
+            println!("Epoch {}: Accuracy = {:.2}%", epoch, (correct as f32 / total as f32) * 100.0);
+        }
+    }
+
+    // 5. Save trained model
+    let recorder = BinBytesRecorder::<burn::record::FullPrecisionSettings>::new();
+    let model_bytes = trainer.model()
+        .save_with_recorder(recorder)
+        .expect("Failed to serialize model");
+    fs::write("assets/trained_model.pkl", &model_bytes)?;
+
+    // 6. Upload to Walrus
+    let model_blob_id = upload_blob(&model_bytes).await?;
+
+    // 7. Final evaluation 
+    let final_model = trainer.model();
+    let mut correct = 0;
+    let mut total_loss = 0.0;
+    for (input, target) in inputs.iter().zip(targets.iter()) {
+        let input_tensor = Tensor::<Backend, 2>::from_data(input.as_slice().into(), &device)
+            .reshape([1, config.input_size]);
+        let output = final_model.forward(input_tensor);
+        let pred = output.argmax(1).int().to_data().value[0] as usize;
+        if pred == *target { correct += 1; }
+        total_loss += (pred as f32 - *target as f32).powi(2);
+    }
+
+    let accuracy = (correct as f32 / inputs.len() as f32) * 100.0;
+    let final_loss = total_loss / inputs.len() as f32;
+
+    // 8. Return signed result
     let response = MLTrainingResponse {
-        model_blob_id: new_model_blob_id,
+        model_blob_id,
         accuracy: format!("{:.6}", accuracy),
         final_loss: format!("{:.6}", final_loss),
         num_samples: num_samples.to_string(),
@@ -123,28 +241,22 @@ pub async fn process_data(
         .as_millis() as u64;
 
     Ok(Json(to_signed_response(
-        &KEYPAIR,  // ← REAL private key!
+        &KEYPAIR,
         response,
         timestamp_ms,
         IntentScope::ProcessData,
     )))
 }
 
-// === WALRUS HELPERS ===
+// === WALRUS HELPERS  ===
 async fn download_blob(blob_id: &str) -> Result<Vec<u8>, EnclaveError> {
     let url = format!("https://aggregator.walrus-testnet.walrus.space/v1/{}", blob_id);
-    reqwest::get(&url)
-        .await
-        .map_err(|e| EnclaveError::Network(e.to_string()))?
-        .bytes()
-        .await
-        .map(|b| b.to_vec())
-        .map_err(|e| EnclaveError::Network(e.to_string()))
+    reqwest::get(&url).await.map_err(|e| EnclaveError::Network(e.to_string()))?
+        .bytes().await.map(|b| b.to_vec()).map_err(|e| EnclaveError::Network(e.to_string()))
 }
 
 async fn upload_blob(data: &[u8]) -> Result<String, EnclaveError> {
-    let client = reqwest::Client::new();
-    let resp = client
+    let resp = reqwest::Client::new()
         .put("https://publisher.walrus-testnet.walrus.space/v1/store")
         .body(data.to_vec())
         .header("Content-Type", "application/octet-stream")
@@ -152,11 +264,6 @@ async fn upload_blob(data: &[u8]) -> Result<String, EnclaveError> {
         .await
         .map_err(|e| EnclaveError::Network(e.to_string()))?;
 
-    let json: serde_json::Value = resp.json().await
-        .map_err(|e| EnclaveError::Network(e.to_string()))?;
-
-    Ok(json["newlyCreated"]["blobObject"]["blobId"]
-        .as_str()
-        .unwrap_or("unknown-blob-id")
-        .to_string())
+    let json: serde_json::Value = resp.json().await.map_err(|e| EnclaveError::Network(e.to_string()))?;
+    Ok(json["newlyCreated"]["blobObject"]["blobId"].as_str().unwrap_or("unknown").to_string())
 }
